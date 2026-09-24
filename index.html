@@ -3,550 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IgnisGuard - Sistema de Prevenção de Incêndios</title>
+    <title>IgnisGuard - Monitoramento de Incêndios</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome para Ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Leaflet CSS & JS para o Mapa Interativo -->
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <!-- Firebase SDK (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-        
         :root {
-            --brand-orange: #E65100;
-            --brand-orange-light: #FF6D00;
-            --brand-brown-dark: #2C1810;
-            --brand-brown-wood: #4E342E;
-            --brand-black: #0D0D0D;
-            --brand-surface: #181412;
-            --brand-card: #231C18;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --border-color: #334155;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--brand-black);
-            color: #f3f4f6;
-            overflow-x: hidden;
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.5s ease;
         }
 
-        .bg-sunset-gradient {
-            background: linear-gradient(135deg, #181412 0%, #2A170F 50%, #3D1C06 100%);
+        body.alerta-ativo {
+            animation: piscarAlerta 1s infinite alternate;
         }
 
-        .bg-brand-fire {
-            background: linear-gradient(135deg, #D84315 0%, #E65100 50%, #FF6D00 100%);
+        @keyframes piscarAlerta {
+            0% { background-color: var(--bg-color); }
+            100% { background-color: #450a0a; }
         }
 
-        @keyframes fireAlertPulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(220, 38, 38, 0.6);
-                border-color: #ef4444;
-            }
-            50% {
-                box-shadow: 0 0 50px 20px rgba(239, 68, 68, 0.9), inset 0 0 40px rgba(239, 68, 68, 0.8);
-                border-color: #f87171;
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(220, 38, 38, 0.6);
-                border-color: #ef4444;
-            }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .fire-alarm-active {
-            animation: fireAlertPulse 0.8s infinite !important;
-        }
-
-        @keyframes textBlink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.98); }
-        }
-
-        .blink-alarm {
-            animation: textBlink 0.7s infinite;
-        }
-
-        @keyframes flameFlicker {
-            0%, 100% { transform: scale(1) rotate(-1deg); }
-            25% { transform: scale(1.08) rotate(1deg); }
-            50% { transform: scale(0.95) rotate(-2deg); }
-            75% { transform: scale(1.05) rotate(2deg); }
-        }
-
-        .flame-animated {
-            animation: flameFlicker 0.6s infinite ease-in-out;
-            transform-origin: bottom center;
-        }
-
-        .leaflet-popup-content-wrapper {
-            background: #1e1714 !important;
-            color: #f3f4f6 !important;
-            border: 1px solid #4E342E;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7) !important;
-        }
-        .leaflet-popup-tip {
-            background: #1e1714 !important;
-        }
-
-        .totem-marker-pin {
-            width: 44px;
-            height: 56px;
+        header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.6));
-            transition: transform 0.3s ease;
-        }
-        .totem-marker-pin:hover {
-            transform: scale(1.15);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        h1 { margin: 0; font-size: 1.8rem; }
+
+        select {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .status-normal { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .status-perigo { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .card h3 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.9rem; }
+        .card .valor { font-size: 2rem; font-weight: bold; }
+
+        #map {
+            height: 350px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-orange-600 selection:text-white">
+<body>
 
-    <!-- CABEÇALHO DA MARCA -->
-    <header class="border-b border-stone-800/80 bg-stone-950/90 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            
-            <div class="flex items-center space-x-3 cursor-pointer group" onclick="goToPage(1)">
-                <div class="relative w-11 h-11 flex items-center justify-center bg-stone-900 rounded-xl border border-amber-800/50 group-hover:border-orange-500 transition-colors duration-300">
-                    <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path class="flame-animated" d="M30 78C30 78 28 65 38 52C40 60 48 58 50 42C58 50 68 56 68 70C68 81 59 88 48 88C37 88 30 82 30 78Z" fill="url(#headerFlameGrad)"/>
-                        <rect x="38" y="22" width="24" height="48" rx="2" fill="#6D4C41" stroke="#3E2723" stroke-width="2"/>
-                        <line x1="42" y1="30" x2="58" y2="30" stroke="#3E2723" stroke-width="2"/>
-                        <line x1="42" y1="42" x2="58" y2="42" stroke="#3E2723" stroke-width="2"/>
-                        <line x1="42" y1="54" x2="58" y2="54" stroke="#3E2723" stroke-width="2"/>
-                        <circle cx="50" cy="36" r="1.5" fill="#FFB300"/>
-                        <circle cx="50" cy="48" r="1.5" fill="#FFB300"/>
-                        <defs>
-                            <linearGradient id="headerFlameGrad" x1="49" y1="42" x2="49" y2="88" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#FFD54F"/>
-                                <stop offset="0.5" stop-color="#FF6D00"/>
-                                <stop offset="1" stop-color="#D84315"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-
-                <div>
-                    <div class="flex items-center space-x-1">
-                        <span class="text-2xl font-black tracking-wider text-white">IGNIS</span>
-                        <span class="text-2xl font-black tracking-wider text-orange-500">GUARD</span>
-                    </div>
-                    <span class="text-[10px] block text-stone-400 font-bold tracking-widest uppercase -mt-1">Totem de Prevenção de Incêndios</span>
-                </div>
-            </div>
-
-            <button id="btnBackHome" onclick="goToPage(1)" class="hidden items-center space-x-2 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white px-4 py-2 rounded-xl border border-stone-700/80 transition duration-200 text-xs sm:text-sm font-semibold">
-                <i class="fa-solid fa-arrow-left text-orange-500"></i>
-                <span>Mudar de Local</span>
-            </button>
+<div class="container">
+    <header>
+        <div>
+            <h1>IgnisGuard</h1>
+            <span id="statusBadge" class="status-badge status-normal">SISTEMA NORMAL</span>
+        </div>
+        <div>
+            <label for="seletorCidade">Selecionar Cidade: </label>
+            <select id="seletorCidade" onchange="mudarCidade(this.value)">
+                <option value="cachoeira_de_minas">Cachoeira de Minas</option>
+                <option value="conceicao_dos_ouros">Conceição dos Ouros</option>
+                <option value="santa_rita_do_sapucai">Santa Rita do Sapucaí</option>
+            </select>
         </div>
     </header>
 
-    <!-- PÁGINA 1: SELEÇÃO DE LOCAL -->
-    <main id="page1" class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex flex-col justify-center">
-        <div class="text-center mb-12">
-            <div class="inline-flex items-center justify-center w-24 h-24 mb-6 rounded-3xl bg-gradient-to-br from-stone-900 via-stone-900 to-amber-950/60 border-2 border-orange-600/40 shadow-2xl shadow-orange-950/50 p-2">
-                <svg viewBox="0 0 200 200" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="90" fill="url(#heroSunGrad)"/>
-                    <circle cx="100" cy="110" r="35" fill="#FFE082" opacity="0.8"/>
-                    <path d="M10 140 Q 50 120, 100 135 T 190 130 L 190 190 L 10 190 Z" fill="#2C1810"/>
-                    <rect x="75" y="45" width="50" height="100" rx="4" fill="#5D4037" stroke="#3E2723" stroke-width="4"/>
-                    <rect x="80" y="55" width="40" height="18" rx="2" fill="#4E342E"/>
-                    <rect x="80" y="80" width="40" height="18" rx="2" fill="#4E342E"/>
-                    <rect x="80" y="105" width="40" height="30" rx="2" fill="#4E342E"/>
-                    <circle cx="90" cy="64" r="2.5" fill="#FFB300"/>
-                    <circle cx="100" cy="64" r="2.5" fill="#FFB300"/>
-                    <circle cx="110" cy="64" r="2.5" fill="#FFB300"/>
-                    <circle cx="90" cy="89" r="2.5" fill="#FFB300"/>
-                    <circle cx="100" cy="89" r="2.5" fill="#FFD54F"/>
-                    <circle cx="110" cy="89" r="2.5" fill="#FFB300"/>
-                    <path class="flame-animated" d="M135 140 C135 110, 155 100, 155 80 C170 100, 180 115, 175 140 Z" fill="url(#heroFireGrad)"/>
-                    <defs>
-                        <linearGradient id="heroSunGrad" x1="100" y1="10" x2="100" y2="190" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#D84315"/>
-                            <stop offset="0.6" stop-color="#E65100"/>
-                            <stop offset="1" stop-color="#3E2723"/>
-                        </linearGradient>
-                        <linearGradient id="heroFireGrad" x1="155" y1="80" x2="155" y2="140" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#FFD54F"/>
-                            <stop offset="0.5" stop-color="#FF6D00"/>
-                            <stop offset="1" stop-color="#DD2C00"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
-
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
-                Qual local você quer avaliar?
-            </h1>
-            <p class="mt-3 text-stone-400 text-sm sm:text-base max-w-xl mx-auto">
-                Selecione uma das zonas rurais abaixo para acessar a estação de telemetria e o monitoramento geoespacial em tempo real via Firebase.
-            </p>
+    <div class="cards-grid">
+        <div class="card">
+            <h3>TEMPERATURA</h3>
+            <div id="tempVal" class="valor">-- °C</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full">
-            <div onclick="selectCity('santa_rita')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-orange-950/40 cursor-pointer flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 rounded-full text-xs font-bold tracking-wide">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>Totem Conectado</span>
-                        </span>
-                        <i class="fa-solid fa-wheat-awn text-stone-700 group-hover:text-amber-500 transition-colors"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Santa Rita do Sapucaí</h2>
-                    <p class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • ETE FMC</p>
-                </div>
-                <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
-                    <span>Acessar Monitoramento</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </div>
-
-            <div onclick="selectCity('cachoeira')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-orange-950/40 cursor-pointer flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 rounded-full text-xs font-bold tracking-wide">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>Totem Conectado</span>
-                        </span>
-                        <i class="fa-solid fa-mountain text-stone-700 group-hover:text-amber-500 transition-colors"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Cachoeira de Minas</h2>
-                    <p class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Zonas Agrícolas</p>
-                </div>
-                <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
-                    <span>Acessar Monitoramento</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </div>
-
-            <div onclick="selectCity('conceicao')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-orange-950/40 cursor-pointer flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 rounded-full text-xs font-bold tracking-wide">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>Totem Conectado</span>
-                        </span>
-                        <i class="fa-solid fa-tree text-stone-700 group-hover:text-amber-500 transition-colors"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Conceição dos Ouros</h2>
-                    <p class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Região Florestal</p>
-                </div>
-                <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
-                    <span>Acessar Monitoramento</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </div>
+        <div class="card">
+            <h3>UMIDADE</h3>
+            <div id="umiVal" class="valor">-- %</div>
         </div>
-    </main>
-
-    <!-- PÁGINA 2: DASHBOARD DE MONITORAMENTO E MAPA -->
-    <main id="page2" class="hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        
-        <div id="telemetryCard" class="bg-stone-900/90 border border-stone-800 rounded-2xl p-5 sm:p-6 mb-6 transition-all duration-300 shadow-xl">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div>
-                    <div class="flex items-center space-x-2 text-orange-400 text-xs font-bold uppercase tracking-wider mb-1">
-                        <i class="fa-solid fa-tower-cell animate-pulse"></i>
-                        <span>Unidade de Telemetria Firebase em Tempo Real</span>
-                    </div>
-                    <h2 id="displayCityName" class="text-2xl sm:text-3xl font-extrabold text-white">---</h2>
-                    <p id="displayCoords" class="text-stone-400 text-xs sm:text-sm mt-1 font-mono">Coordenadas: --, --</p>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 w-full lg:w-auto">
-                    <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-                        <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
-                            <span>Gás / Fumaça</span>
-                            <i class="fa-solid fa-smog text-orange-400"></i>
-                        </div>
-                        <div class="flex items-baseline space-x-1">
-                            <span id="valSmoke" class="text-2xl font-extrabold text-white">--</span>
-                            <span class="text-xs font-semibold text-stone-400">RAW</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-                        <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
-                            <span>Temperatura</span>
-                            <i class="fa-solid fa-temperature-high text-amber-500"></i>
-                        </div>
-                        <div class="flex items-baseline space-x-1">
-                            <span id="valTemp" class="text-2xl font-extrabold text-white">--</span>
-                            <span class="text-xs font-semibold text-stone-400">°C</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-                        <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
-                            <span>Sinal LoRa</span>
-                            <i class="fa-solid fa-wifi text-emerald-400"></i>
-                        </div>
-                        <div class="flex items-baseline space-x-1">
-                            <span id="valLora" class="text-2xl font-extrabold text-white">--</span>
-                            <span class="text-xs font-semibold text-stone-400">dBm</span>
-                        </div>
-                    </div>
-
-                    <div id="statusContainer" class="bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300">
-                        <div class="text-emerald-400 text-xs font-semibold mb-2 flex items-center justify-between">
-                            <span>Status</span>
-                            <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        </div>
-                        <div>
-                            <span id="valStatus" class="text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block">NORMAL</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="card">
+            <h3>GÁS / FUMAÇA</h3>
+            <div id="gasVal" class="valor">-- ppm</div>
         </div>
-
-        <div class="relative rounded-2xl overflow-hidden border border-stone-800 shadow-2xl mb-6 bg-stone-900">
-            <div id="mapContainer" class="w-full h-[450px] sm:h-[520px] z-10"></div>
+        <div class="card">
+            <h3>SINAL LORA</h3>
+            <div id="loraVal" class="valor">-- dBm</div>
         </div>
+    </div>
 
-        <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
-                <span class="text-xs font-extrabold text-stone-400 uppercase tracking-wider whitespace-nowrap mr-2">Locais:</span>
-                <button onclick="selectCity('santa_rita')" id="btnQuickSantaRita" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">
-                    Santa Rita do Sapucaí (ETE)
-                </button>
-                <button onclick="selectCity('cachoeira')" id="btnQuickCachoeira" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">
-                    Cachoeira de Minas
-                </button>
-                <button onclick="selectCity('conceicao')" id="btnQuickConceicao" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">
-                    Conceição dos Ouros
-                </button>
-            </div>
-        </div>
-    </main>
+    <div id="map"></div>
+</div>
 
-    <footer class="border-t border-stone-900 bg-stone-950 py-6 text-center text-xs text-stone-500">
-        <div class="max-w-7xl mx-auto px-4">
-            <p>&copy; 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.</p>
-        </div>
-    </footer>
+<script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+        databaseURL: "https://teste-79de3-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    <script>
-        const URL_FIREBASE = "https://teste-79de3-default-rtdb.firebaseio.com/teste.json";
+    // Configuração Inicial do Mapa Leaflet
+    const map = L.map('map').setView([-22.3528, -45.7761], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
 
-        const citiesData = {
-            santa_rita: {
-                name: "Santa Rita do Sapucaí (ETE FMC)",
-                cityCoords: [-22.257827, -45.703358],
-                refCoords: [-22.257827, -45.703358],
-                refName: "Totem IgnisGuard - ETE FMC"
-            },
-            cachoeira: {
-                name: "Cachoeira de Minas",
-                cityCoords: [-22.353751, -45.781747],
-                refCoords: [-22.353751, -45.781747],
-                refName: "Totem IgnisGuard - Zona Rural Cachoeira"
-            },
-            conceicao: {
-                name: "Conceição dos Ouros",
-                cityCoords: [-22.411132, -45.796296],
-                refCoords: [-22.419238, -45.789325],
-                refName: "Totem IgnisGuard - Reserva Florestal Ouros"
-            }
-        };
+    let marker = L.marker([-22.3528, -45.7761]).addTo(map);
 
-        let currentCityKey = 'santa_rita';
-        let map = null;
-        let cityMarker = null;
-        let totemMarker = null;
-        let isFireActive = false;
+    let escutaAtual = null;
 
-        const page1 = document.getElementById('page1');
-        const page2 = document.getElementById('page2');
-        const btnBackHome = document.getElementById('btnBackHome');
-        const telemetryCard = document.getElementById('telemetryCard');
-        const statusContainer = document.getElementById('statusContainer');
-        const statusDot = document.getElementById('statusDot');
-        const valStatus = document.getElementById('valStatus');
-        const valSmoke = document.getElementById('valSmoke');
-        const valTemp = document.getElementById('valTemp');
-        const valLora = document.getElementById('valLora');
-        const displayCityName = document.getElementById('displayCityName');
-        const displayCoords = document.getElementById('displayCoords');
+    function mudarCidade(cidadeKey) {
+        if (escutaAtual) escutaAtual.off();
 
-        function createTotemIcon(isAlarm = false) {
-            const primaryColor = isAlarm ? "#EF4444" : "#FF6D00";
-            const flameGrad1 = isAlarm ? "#F87171" : "#FFD54F";
-            const flameGrad2 = isAlarm ? "#DC2626" : "#DD2C00";
+        escutaAtual = db.ref('cidades/' + cidadeKey);
 
-            const svgHtml = `
-                <div class="totem-marker-pin">
-                    <svg viewBox="0 0 60 80" width="44" height="56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M30 0C13.4315 0 0 13.4315 0 30C0 48 30 80 30 80C30 80 60 48 60 30C60 13.4315 46.5685 0 30 0Z" fill="${isAlarm ? '#450A0A' : '#1C1917'}" stroke="${primaryColor}" stroke-width="3"/>
-                        <path class="flame-animated" d="M18 42C18 42 16 32 24 22C26 28 32 26 34 14 C40 22 48 28 48 38C48 46 40 52 30 52C20 52 18 45 18 42Z" fill="url(#pinFlameGrad)"/>
-                        <rect x="25" y="18" width="10" height="22" rx="1" fill="#5D4037" stroke="#3E2723" stroke-width="1"/>
-                        <circle cx="30" cy="23" r="1" fill="#FFB300"/>
-                        <circle cx="30" cy="28" r="1" fill="#FFB300"/>
-                        <defs>
-                            <linearGradient id="pinFlameGrad" x1="30" y1="14" x2="30" y2="52" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="${flameGrad1}"/>
-                                <stop offset="1" stop-color="${flameGrad2}"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-            `;
+        escutaAtual.on('value', (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                document.getElementById('tempVal').innerText = (data.temperatura !== undefined ? data.temperatura : '--') + ' °C';
+                document.getElementById('umiVal').innerText = (data.umidade !== undefined ? data.umidade : '--') + ' %';
+                document.getElementById('gasVal').innerText = (data.gas !== undefined ? data.gas : '--') + ' ppm';
+                document.getElementById('loraVal').innerText = (data.lora !== undefined ? data.lora : '--') + ' dBm';
 
-            return L.divIcon({ html: svgHtml, className: '', iconSize: [44, 56], iconAnchor: [22, 56], popupAnchor: [0, -50] });
-        }
-
-        function createCityIcon() {
-            const svgHtml = `
-                <div class="w-8 h-8 rounded-full bg-stone-900 border-2 border-amber-500 flex items-center justify-center text-amber-500 shadow-lg">
-                    <i class="fa-solid fa-city text-xs"></i>
-                </div>
-            `;
-            return L.divIcon({ html: svgHtml, className: '', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] });
-        }
-
-        function initMap() {
-            if (map) return;
-            const defaultCity = citiesData[currentCityKey];
-            map = L.map('mapContainer', { zoomControl: true, attributionControl: false }).setView(defaultCity.refCoords, 15);
-
-            L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-            }).addTo(map);
-
-            cityMarker = L.marker(defaultCity.cityCoords, { icon: createCityIcon() }).addTo(map);
-            cityMarker.bindPopup(`<b>Sede Urbana</b><br>${defaultCity.name}`);
-
-            totemMarker = L.marker(defaultCity.refCoords, { icon: createTotemIcon(false) }).addTo(map);
-            totemMarker.bindPopup(`<b>Totem IgnisGuard</b><br>${defaultCity.refName}`);
-        }
-
-        function goToPage(pageNum) {
-            if (pageNum === 1) {
-                page1.classList.remove('hidden');
-                page2.classList.add('hidden');
-                btnBackHome.classList.add('hidden');
-                btnBackHome.classList.remove('flex');
-            } else {
-                page1.classList.add('hidden');
-                page2.classList.remove('hidden');
-                btnBackHome.classList.remove('hidden');
-                btnBackHome.classList.add('flex');
-
-                setTimeout(() => {
-                    initMap();
-                    if (map) map.invalidateSize();
-                }, 100);
-            }
-        }
-
-        function selectCity(cityKey) {
-            currentCityKey = cityKey;
-            const city = citiesData[cityKey];
-
-            displayCityName.innerText = city.name;
-            displayCoords.innerText = `Ponto do Totem: ${city.refCoords[0].toFixed(5)}, ${city.refCoords[1].toFixed(5)}`;
-
-            updateQuickButtons();
-
-            if (map) {
-                map.flyTo(city.refCoords, 15, { duration: 1.2 });
-                cityMarker.setLatLng(city.cityCoords);
-                cityMarker.bindPopup(`<b>Sede Urbana</b><br>${city.name}`);
-                totemMarker.setLatLng(city.refCoords);
-                totemMarker.bindPopup(`<b>Totem IgnisGuard</b><br>${city.refName}`);
-            }
-
-            goToPage(2);
-        }
-
-        function updateQuickButtons() {
-            const btns = {
-                santa_rita: document.getElementById('btnQuickSantaRita'),
-                cachoeira: document.getElementById('btnQuickCachoeira'),
-                conceicao: document.getElementById('btnQuickConceicao')
-            };
-
-            for (let key in btns) {
-                if (key === currentCityKey) {
-                    btns[key].className = "px-3.5 py-2 rounded-xl text-xs font-bold bg-orange-600 text-white whitespace-nowrap shadow-lg shadow-orange-950/50 border border-orange-500 transition";
+                const badge = document.getElementById('statusBadge');
+                if (data.alerta) {
+                    document.body.classList.add('alerta-ativo');
+                    badge.innerText = '🚨 ALERTA DE INCÊNDIO';
+                    badge.className = 'status-badge status-perigo';
                 } else {
-                    btns[key].className = "px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 whitespace-nowrap transition border border-stone-700";
+                    document.body.classList.remove('alerta-ativo');
+                    badge.innerText = 'SISTEMA NORMAL';
+                    badge.className = 'status-badge status-normal';
+                }
+
+                if (data.lat && data.lng) {
+                    map.setView([data.lat, data.lng], 13);
+                    marker.setLatLng([data.lat, data.lng]);
                 }
             }
-        }
+        });
+    }
 
-        function setAlertaEstado(alertaAtivo) {
-            if (alertaAtivo && !isFireActive) {
-                isFireActive = true;
-                telemetryCard.classList.add('fire-alarm-active');
-                statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
-                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
-                valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
-                valStatus.innerText = "INCÊNDIO DETECTADO!";
+    // Inicia escutando a primeira cidade
+    mudarCidade('cachoeira_de_minas');
+</script>
 
-                if (totemMarker) {
-                    totemMarker.setIcon(createTotemIcon(true));
-                    totemMarker.openPopup();
-                }
-            } else if (!alertaAtivo && isFireActive) {
-                isFireActive = false;
-                telemetryCard.classList.remove('fire-alarm-active');
-                statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-                valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
-                valStatus.innerText = "NORMAL";
-
-                if (totemMarker) {
-                    totemMarker.setIcon(createTotemIcon(false));
-                }
-            }
-        }
-
-        async function consultarFirebase() {
-            try {
-                const response = await fetch(URL_FIREBASE);
-                const dados = await response.json();
-                if (!dados) return;
-
-                valSmoke.innerText = dados.gas !== undefined ? dados.gas : "--";
-                valTemp.innerText = dados.temp !== undefined ? dados.temp : "--";
-                valLora.innerText = dados.rssi !== undefined ? dados.rssi : "--";
-
-                setAlertaEstado(Boolean(dados.alerta));
-
-                if (dados.local) {
-                    const loc = dados.local.toLowerCase();
-                    if (loc === "ete" || loc === "santa_rita") {
-                        if (currentCityKey !== 'santa_rita') selectCity('santa_rita');
-                    } else if (loc === "cachoeira") {
-                        if (currentCityKey !== 'cachoeira') selectCity('cachoeira');
-                    } else if (loc === "conceicao" || loc === "neo") {
-                        if (currentCityKey !== 'conceicao') selectCity('conceicao');
-                    }
-                }
-            } catch (error) {
-                console.error("Erro ao ler do Firebase:", error);
-            }
-        }
-
-        window.onload = () => {
-            consultarFirebase();
-            setInterval(consultarFirebase, 2000);
-        };
-    </script>
 </body>
 </html>
