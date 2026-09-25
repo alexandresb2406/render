@@ -341,7 +341,7 @@
             }
         };
 
-        // Dicionário de Idiomas
+        // Dicionário de Traduções
         const translations = {
             pt: {
                 headerSubtitle: "Totem de Prevenção de Incêndios",
@@ -394,7 +394,6 @@
         let map = null;
         let totemMarker = null;
         let escutaAtual = null;
-        let lastAlarmState = false;
 
         const page1 = document.getElementById('page1');
         const page2 = document.getElementById('page2');
@@ -413,7 +412,7 @@
             currentLang = lang;
             const t = translations[lang];
 
-            // Atualiza botões de idioma
+            // Altera visual dos botões de idioma
             if (lang === 'pt') {
                 document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition";
                 document.getElementById('btnLangEn').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
@@ -422,7 +421,7 @@
                 document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
             }
 
-            // Textos fixos da interface
+            // Traduz os textos na tela
             document.getElementById('txtHeaderSubtitle').innerText = t.headerSubtitle;
             document.getElementById('txtBtnChangeLocation').innerText = t.btnChangeLocation;
             document.getElementById('txtHomeTitle').innerText = t.homeTitle;
@@ -441,16 +440,15 @@
             document.querySelectorAll('.txt-firebase-badge').forEach(el => el.innerText = t.firebaseBadge);
             document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
 
-            // Atualiza status se estiver aguardando dados ou normal
-            if (valStatus.innerText === "NORMAL" || valStatus.innerText === "NORMAL") {
+            // Atualiza status se necessário
+            if (valStatus.innerText.includes("NORMAL")) {
                 valStatus.innerText = t.statusNormal;
-            } else if (valStatus.innerText === "INCÊNDIO DETECTADO!" || valStatus.innerText === "FIRE DETECTED!") {
+            } else if (valStatus.innerText.includes("DETECTADO") || valStatus.innerText.includes("DETECTED")) {
                 valStatus.innerText = t.statusAlert;
             } else if (valStatus.innerText.includes("AGUARDANDO") || valStatus.innerText.includes("WAITING")) {
                 valStatus.innerText = t.statusWaiting;
             }
 
-            // Atualiza popup do mapa se estiver aberto
             if (totemMarker) {
                 const defaultCity = citiesData[currentCityKey];
                 totemMarker.setPopupContent(`<b>Totem IgnisGuard</b><br>${defaultCity.name}`);
