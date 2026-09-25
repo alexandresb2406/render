@@ -140,24 +140,32 @@
                         <span class="text-2xl font-black tracking-wider text-white">IGNIS</span>
                         <span class="text-2xl font-black tracking-wider text-orange-500">GUARD</span>
                     </div>
-                    <span class="text-[10px] block text-stone-400 font-bold tracking-widest uppercase -mt-1">Totem de Prevenção de Incêndios</span>
+                    <span id="txtHeaderSubtitle" class="text-[10px] block text-stone-400 font-bold tracking-widest uppercase -mt-1">Totem de Prevenção de Incêndios</span>
                 </div>
             </div>
 
-            <button id="btnBackHome" onclick="goToPage(1)" class="hidden items-center space-x-2 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white px-4 py-2 rounded-xl border border-stone-700/85 transition duration-200 text-xs sm:text-sm font-semibold">
-                <i class="fa-solid fa-arrow-left text-orange-500"></i>
-                <span>Mudar de Local</span>
-            </button>
+            <div class="flex items-center space-x-3">
+                <!-- SELETOR DE IDIOMA -->
+                <div class="bg-stone-900 border border-stone-800 rounded-xl p-1 flex items-center space-x-1">
+                    <button onclick="setLanguage('pt')" id="btnLangPt" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition">PT</button>
+                    <button onclick="setLanguage('en')" id="btnLangEn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition">EN</button>
+                </div>
+
+                <button id="btnBackHome" onclick="goToPage(1)" class="hidden items-center space-x-2 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white px-4 py-2 rounded-xl border border-stone-700/85 transition duration-200 text-xs sm:text-sm font-semibold">
+                    <i class="fa-solid fa-arrow-left text-orange-500"></i>
+                    <span id="txtBtnChangeLocation">Mudar de Local</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- PÁGINA 1: SELEÇÃO DE LOCAL -->
     <main id="page1" class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex flex-col justify-center">
         <div class="text-center mb-12">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+            <h1 id="txtHomeTitle" class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
                 Qual local você quer avaliar?
             </h1>
-            <p class="mt-3 text-stone-400 text-sm sm:text-base max-w-xl mx-auto">
+            <p id="txtHomeSubtitle" class="mt-3 text-stone-400 text-sm sm:text-base max-w-xl mx-auto">
                 Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real via Firebase.
             </p>
         </div>
@@ -169,15 +177,15 @@
                     <div class="flex items-center justify-between mb-4">
                         <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/50 rounded-full text-xs font-bold">
                             <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            <span>Ativo Firebase</span>
+                            <span class="txt-firebase-badge">Ativo Firebase</span>
                         </span>
                         <i class="fa-solid fa-wheat-awn text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
                     <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Santa Rita do Sapucaí</h2>
-                    <p class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Vale da Eletrônica</p>
+                    <p id="txtDescSanta" class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Vale da Eletrônica</p>
                 </div>
                 <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
-                    <span>Acessar Monitoramento</span>
+                    <span class="txt-access-monitor">Acessar Monitoramento</span>
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
@@ -188,15 +196,15 @@
                     <div class="flex items-center justify-between mb-4">
                         <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/50 rounded-full text-xs font-bold">
                             <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            <span>Ativo Firebase</span>
+                            <span class="txt-firebase-badge">Ativo Firebase</span>
                         </span>
                         <i class="fa-solid fa-mountain text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
                     <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Cachoeira de Minas</h2>
-                    <p class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Zonas Agrícolas</p>
+                    <p id="txtDescCachoeira" class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Zonas Agrícolas</p>
                 </div>
                 <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
-                    <span>Acessar Monitoramento</span>
+                    <span class="txt-access-monitor">Acessar Monitoramento</span>
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
@@ -207,15 +215,15 @@
                     <div class="flex items-center justify-between mb-4">
                         <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/50 rounded-full text-xs font-bold">
                             <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            <span>Ativo Firebase</span>
+                            <span class="txt-firebase-badge">Ativo Firebase</span>
                         </span>
                         <i class="fa-solid fa-tree text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
                     <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Conceição dos Ouros</h2>
-                    <p class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Região Florestal</p>
+                    <p id="txtDescConceicao" class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Região Florestal</p>
                 </div>
                 <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
-                    <span>Acessar Monitoramento</span>
+                    <span class="txt-access-monitor">Acessar Monitoramento</span>
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
@@ -230,7 +238,7 @@
                 <div>
                     <div class="flex items-center space-x-2 text-orange-400 text-xs font-bold uppercase tracking-wider mb-1">
                         <i class="fa-solid fa-tower-cell animate-pulse"></i>
-                        <span>Estação Conectada ao Firebase</span>
+                        <span id="txtConnectedFirebase">Estação Conectada ao Firebase</span>
                     </div>
                     <h2 id="displayCityName" class="text-2xl sm:text-3xl font-extrabold text-white">---</h2>
                     <p id="displayCoords" class="text-stone-400 text-xs sm:text-sm mt-1 font-mono">Coordenadas: --, --</p>
@@ -240,7 +248,7 @@
                     <!-- Fumaça/Gás -->
                     <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
                         <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
-                            <span>Gás / Fumaça</span>
+                            <span id="txtLabelSmoke">Gás / Fumaça</span>
                             <i class="fa-solid fa-smog text-orange-400"></i>
                         </div>
                         <div class="flex items-baseline space-x-1">
@@ -252,7 +260,7 @@
                     <!-- Temperatura -->
                     <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
                         <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
-                            <span>Temperatura</span>
+                            <span id="txtLabelTemp">Temperatura</span>
                             <i class="fa-solid fa-temperature-high text-amber-500"></i>
                         </div>
                         <div class="flex items-baseline space-x-1">
@@ -264,7 +272,7 @@
                     <!-- Sinal LoRa -->
                     <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
                         <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
-                            <span>Sinal LoRa</span>
+                            <span id="txtLabelLora">Sinal LoRa</span>
                             <i class="fa-solid fa-wifi text-emerald-400"></i>
                         </div>
                         <div class="flex items-baseline space-x-1">
@@ -276,7 +284,7 @@
                     <!-- Status -->
                     <div id="statusContainer" class="bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300">
                         <div class="text-emerald-400 text-xs font-semibold mb-2 flex items-center justify-between">
-                            <span>Status</span>
+                            <span id="txtLabelStatus">Status</span>
                             <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         </div>
                         <div>
@@ -295,7 +303,7 @@
         <!-- BARRA INFERIOR -->
         <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
-                <span class="text-xs font-extrabold text-stone-400 uppercase tracking-wider whitespace-nowrap mr-2">Cidades:</span>
+                <span id="txtCitiesLabel" class="text-xs font-extrabold text-stone-400 uppercase tracking-wider whitespace-nowrap mr-2">Cidades:</span>
                 <button onclick="selectCity('santa_rita')" id="btnQuickSantaRita" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">Santa Rita do Sapucaí</button>
                 <button onclick="selectCity('cachoeira')" id="btnQuickCachoeira" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">Cachoeira de Minas</button>
                 <button onclick="selectCity('conceicao')" id="btnQuickConceicao" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">Conceição dos Ouros</button>
@@ -306,7 +314,7 @@
     <!-- FOOTER -->
     <footer class="border-t border-stone-900 bg-stone-950 py-6 text-center text-xs text-stone-500">
         <div class="max-w-7xl mx-auto px-4">
-            <p>&copy; 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.</p>
+            <p id="txtFooter">© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.</p>
         </div>
     </footer>
 
@@ -333,10 +341,60 @@
             }
         };
 
+        // Dicionário de Idiomas
+        const translations = {
+            pt: {
+                headerSubtitle: "Totem de Prevenção de Incêndios",
+                btnChangeLocation: "Mudar de Local",
+                homeTitle: "Qual local você quer avaliar?",
+                homeSubtitle: "Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real via Firebase.",
+                firebaseBadge: "Ativo Firebase",
+                accessMonitor: "Acessar Monitoramento",
+                descSanta: "Sul de Minas Gerais • Vale da Eletrônica",
+                descCachoeira: "Sul de Minas Gerais • Zonas Agrícolas",
+                descConceicao: "Sul de Minas Gerais • Região Florestal",
+                connectedFirebase: "Estação Conectada ao Firebase",
+                coordsPrefix: "Coordenadas",
+                labelSmoke: "Gás / Fumaça",
+                labelTemp: "Temperatura",
+                labelLora: "Sinal LoRa",
+                labelStatus: "Status",
+                statusNormal: "NORMAL",
+                statusAlert: "INCÊNDIO DETECTADO!",
+                statusWaiting: "AGUARDANDO DADOS",
+                citiesLabel: "Cidades:",
+                footerText: "© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas."
+            },
+            en: {
+                headerSubtitle: "Fire Prevention Totem",
+                btnChangeLocation: "Change Location",
+                homeTitle: "Which location do you want to evaluate?",
+                homeSubtitle: "Select one of the rural zones below to access the real-time telemetry station via Firebase.",
+                firebaseBadge: "Firebase Active",
+                accessMonitor: "Access Monitoring",
+                descSanta: "Southern Minas Gerais • Electronics Valley",
+                descCachoeira: "Southern Minas Gerais • Agricultural Zones",
+                descConceicao: "Southern Minas Gerais • Forest Region",
+                connectedFirebase: "Station Connected to Firebase",
+                coordsPrefix: "Coordinates",
+                labelSmoke: "Gas / Smoke",
+                labelTemp: "Temperature",
+                labelLora: "LoRa Signal",
+                labelStatus: "Status",
+                statusNormal: "NORMAL",
+                statusAlert: "FIRE DETECTED!",
+                statusWaiting: "WAITING FOR DATA",
+                citiesLabel: "Cities:",
+                footerText: "© 2026 IgnisGuard — Fire Prevention and Telemetry Totem for Farms."
+            }
+        };
+
+        let currentLang = 'pt';
         let currentCityKey = 'santa_rita';
         let map = null;
         let totemMarker = null;
         let escutaAtual = null;
+        let lastAlarmState = false;
 
         const page1 = document.getElementById('page1');
         const page2 = document.getElementById('page2');
@@ -350,6 +408,54 @@
         const valLora = document.getElementById('valLora');
         const displayCityName = document.getElementById('displayCityName');
         const displayCoords = document.getElementById('displayCoords');
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            // Atualiza botões de idioma
+            if (lang === 'pt') {
+                document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition";
+                document.getElementById('btnLangEn').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
+            } else {
+                document.getElementById('btnLangEn').className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition";
+                document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
+            }
+
+            // Textos fixos da interface
+            document.getElementById('txtHeaderSubtitle').innerText = t.headerSubtitle;
+            document.getElementById('txtBtnChangeLocation').innerText = t.btnChangeLocation;
+            document.getElementById('txtHomeTitle').innerText = t.homeTitle;
+            document.getElementById('txtHomeSubtitle').innerText = t.homeSubtitle;
+            document.getElementById('txtDescSanta').innerText = t.descSanta;
+            document.getElementById('txtDescCachoeira').innerText = t.descCachoeira;
+            document.getElementById('txtDescConceicao').innerText = t.descConceicao;
+            document.getElementById('txtConnectedFirebase').innerText = t.connectedFirebase;
+            document.getElementById('txtLabelSmoke').innerText = t.labelSmoke;
+            document.getElementById('txtLabelTemp').innerText = t.labelTemp;
+            document.getElementById('txtLabelLora').innerText = t.labelLora;
+            document.getElementById('txtLabelStatus').innerText = t.labelStatus;
+            document.getElementById('txtCitiesLabel').innerText = t.citiesLabel;
+            document.getElementById('txtFooter').innerText = t.footerText;
+
+            document.querySelectorAll('.txt-firebase-badge').forEach(el => el.innerText = t.firebaseBadge);
+            document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
+
+            // Atualiza status se estiver aguardando dados ou normal
+            if (valStatus.innerText === "NORMAL" || valStatus.innerText === "NORMAL") {
+                valStatus.innerText = t.statusNormal;
+            } else if (valStatus.innerText === "INCÊNDIO DETECTADO!" || valStatus.innerText === "FIRE DETECTED!") {
+                valStatus.innerText = t.statusAlert;
+            } else if (valStatus.innerText.includes("AGUARDANDO") || valStatus.innerText.includes("WAITING")) {
+                valStatus.innerText = t.statusWaiting;
+            }
+
+            // Atualiza popup do mapa se estiver aberto
+            if (totemMarker) {
+                const defaultCity = citiesData[currentCityKey];
+                totemMarker.setPopupContent(`<b>Totem IgnisGuard</b><br>${defaultCity.name}`);
+            }
+        }
 
         function createTotemIcon(isAlarm = false) {
             const primaryColor = isAlarm ? "#EF4444" : "#FF6D00";
@@ -423,11 +529,11 @@
         function escutarFirebase(cityKey) {
             if (escutaAtual) escutaAtual.off();
 
-            // Caminho correspondente no Firebase
             escutaAtual = db.ref('cidades/' + cityKey);
 
             escutaAtual.on('value', (snapshot) => {
                 const data = snapshot.val();
+                const t = translations[currentLang];
                 if (data) {
                     valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
                     valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
@@ -435,7 +541,7 @@
 
                     const lat = data.lat || citiesData[cityKey].cityCoords[0];
                     const lng = data.lng || citiesData[cityKey].cityCoords[1];
-                    displayCoords.innerText = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                    displayCoords.innerText = `${t.coordsPrefix}: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
                     if (map) {
                         map.setView([lat, lng], 14);
@@ -447,21 +553,21 @@
                         statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
                         statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
                         valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
-                        valStatus.innerText = "INCÊNDIO DETECTADO!";
+                        valStatus.innerText = t.statusAlert;
                         if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
                     } else {
                         telemetryCard.classList.remove('fire-alarm-active');
                         statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
                         statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
                         valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
-                        valStatus.innerText = "NORMAL";
+                        valStatus.innerText = t.statusNormal;
                         if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
                     }
                 } else {
                     valTemp.innerText = '--';
                     valSmoke.innerText = '--';
                     valLora.innerText = '--';
-                    valStatus.innerText = 'AGUARDANDO DADOS';
+                    valStatus.innerText = t.statusWaiting;
                 }
             });
         }
