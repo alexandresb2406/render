@@ -395,6 +395,13 @@
         let totemMarker = null;
         let escutaAtual = null;
 
+        // Controle de tempo do último pacote recebido por cidade
+        let ultimaLeituraPorCidade = {
+            santa_rita: Date.now(),
+            cachoeira: Date.now(),
+            conceicao: Date.now()
+        };
+
         const page1 = document.getElementById('page1');
         const page2 = document.getElementById('page2');
         const btnBackHome = document.getElementById('btnBackHome');
@@ -447,6 +454,8 @@
                 valStatus.innerText = t.statusAlert;
             } else if (valStatus.innerText.includes("AGUARDANDO") || valStatus.innerText.includes("WAITING")) {
                 valStatus.innerText = t.statusWaiting;
+            } else if (valStatus.innerText.includes("SEM SINAL")) {
+                valStatus.innerText = "SEM SINAL";
             }
 
             if (totemMarker) {
@@ -532,7 +541,11 @@
             escutaAtual.on('value', (snapshot) => {
                 const data = snapshot.val();
                 const t = translations[currentLang];
+                
                 if (data) {
+                    // Atualiza o cronômetro desta cidade com o momento atual
+                    ultimaLeituraPorCidade[cityKey] = Date.now();
+
                     valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
                     valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
                     valLora.innerText = data.lora !== undefined ? data.lora : '--';
@@ -585,6 +598,23 @@
                 }
             }
         }
+
+        // Vigia que roda a cada 1 segundo checando se a cidade ativa ficou sem sinal por mais de 10 segundos
+        setInterval(() => {
+            const agora = Date.now();
+
+            if (agora - ultimaLeituraPorCidade[currentCityKey] > 10000) {
+                valTemp.innerText = '--';
+                valSmoke.innerText = '--';
+                valLora.innerText = '--';
+                
+                telemetryCard.classList.remove('fire-alarm-active');
+                statusContainer.className = "bg-amber-950/40 border border-amber-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+                valStatus.className = "text-base sm:text-lg font-black text-amber-400 tracking-wider uppercase block";
+                valStatus.innerText = "SEM SINAL";
+            }
+        }, 1000);
     </script>
 </body>
 </html>
