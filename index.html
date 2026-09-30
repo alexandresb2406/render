@@ -166,7 +166,7 @@
                 Qual local você quer avaliar?
             </h1>
             <p id="txtHomeSubtitle" class="mt-3 text-stone-400 text-sm sm:text-base max-w-xl mx-auto">
-                Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real via Firebase.
+                Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real.
             </p>
         </div>
 
@@ -175,9 +175,9 @@
             <div onclick="selectCity('santa_rita')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/50 rounded-full text-xs font-bold">
-                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            <span class="txt-firebase-badge">Ativo Firebase</span>
+                        <span id="badge-santa_rita" class="inline-flex items-center space-x-1.5 px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 rounded-full text-xs font-bold transition-colors">
+                            <span id="badge-dot-santa_rita" class="w-2 h-2 rounded-full bg-stone-500"></span>
+                            <span id="badge-text-santa_rita">Aguardando...</span>
                         </span>
                         <i class="fa-solid fa-wheat-awn text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
@@ -194,9 +194,9 @@
             <div onclick="selectCity('cachoeira')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/50 rounded-full text-xs font-bold">
-                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            <span class="txt-firebase-badge">Ativo Firebase</span>
+                        <span id="badge-cachoeira" class="inline-flex items-center space-x-1.5 px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 rounded-full text-xs font-bold transition-colors">
+                            <span id="badge-dot-cachoeira" class="w-2 h-2 rounded-full bg-stone-500"></span>
+                            <span id="badge-text-cachoeira">Aguardando...</span>
                         </span>
                         <i class="fa-solid fa-mountain text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
@@ -213,9 +213,9 @@
             <div onclick="selectCity('conceicao')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-400 border border-red-500/50 rounded-full text-xs font-bold">
-                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            <span class="txt-firebase-badge">Ativo Firebase</span>
+                        <span id="badge-conceicao" class="inline-flex items-center space-x-1.5 px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 rounded-full text-xs font-bold transition-colors">
+                            <span id="badge-dot-conceicao" class="w-2 h-2 rounded-full bg-stone-500"></span>
+                            <span id="badge-text-conceicao">Aguardando...</span>
                         </span>
                         <i class="fa-solid fa-tree text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
@@ -341,14 +341,16 @@
             }
         };
 
-        // Dicionário de Traduções (Agora com o statusNoSignal)
+        // Dicionário de Traduções
         const translations = {
             pt: {
                 headerSubtitle: "Totem de Prevenção de Incêndios",
                 btnChangeLocation: "Mudar de Local",
                 homeTitle: "Qual local você quer avaliar?",
-                homeSubtitle: "Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real via Firebase.",
-                firebaseBadge: "Ativo Firebase",
+                homeSubtitle: "Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real.",
+                badgeWaiting: "Aguardando...",
+                badgeActive: "Sinal Ativo",
+                badgeInactive: "Sem Sinal",
                 accessMonitor: "Acessar Monitoramento",
                 descSanta: "Sul de Minas Gerais • Vale da Eletrônica",
                 descCachoeira: "Sul de Minas Gerais • Zonas Agrícolas",
@@ -370,8 +372,10 @@
                 headerSubtitle: "Fire Prevention Totem",
                 btnChangeLocation: "Change Location",
                 homeTitle: "Which location do you want to evaluate?",
-                homeSubtitle: "Select one of the rural zones below to access the real-time telemetry station via Firebase.",
-                firebaseBadge: "Firebase Active",
+                homeSubtitle: "Select one of the rural zones below to access the real-time telemetry station.",
+                badgeWaiting: "Waiting...",
+                badgeActive: "Active Signal",
+                badgeInactive: "No Signal",
                 accessMonitor: "Access Monitoring",
                 descSanta: "Southern Minas Gerais • Electronics Valley",
                 descCachoeira: "Southern Minas Gerais • Agricultural Zones",
@@ -396,6 +400,7 @@
         let map = null;
         let totemMarker = null;
         let escutaAtual = null;
+        let dadosCidadesGlobal = null; // Guarda os dados para facilitar a tradução do badge inicial
 
         // Controle de tempo do último pacote recebido por cidade
         let ultimaLeituraPorCidade = {
@@ -421,7 +426,6 @@
             currentLang = lang;
             const t = translations[lang];
 
-            // Altera visual dos botões de idioma
             if (lang === 'pt') {
                 document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition";
                 document.getElementById('btnLangEn').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
@@ -430,7 +434,6 @@
                 document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
             }
 
-            // Traduz os textos na tela
             document.getElementById('txtHeaderSubtitle').innerText = t.headerSubtitle;
             document.getElementById('txtBtnChangeLocation').innerText = t.btnChangeLocation;
             document.getElementById('txtHomeTitle').innerText = t.homeTitle;
@@ -446,10 +449,9 @@
             document.getElementById('txtCitiesLabel').innerText = t.citiesLabel;
             document.getElementById('txtFooter').innerText = t.footerText;
 
-            document.querySelectorAll('.txt-firebase-badge').forEach(el => el.innerText = t.firebaseBadge);
             document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
 
-            // Atualiza status se necessário
+            // Atualiza status se necessário na página 2
             if (valStatus.innerText.includes("NORMAL")) {
                 valStatus.innerText = t.statusNormal;
             } else if (valStatus.innerText.includes("DETECTADO") || valStatus.innerText.includes("DETECTED")) {
@@ -460,16 +462,20 @@
                 valStatus.innerText = t.statusNoSignal;
             }
 
+            // Atualiza marcadores do mapa
             if (totemMarker) {
                 const defaultCity = citiesData[currentCityKey];
                 totemMarker.setPopupContent(`<b>Totem IgnisGuard</b><br>${defaultCity.name}`);
             }
+
+            // Atualiza textos dos badges na Página 1
+            atualizarBadgesHome();
         }
 
-        function createTotemIcon(isAlarm = false) {
-            const primaryColor = isAlarm ? "#EF4444" : "#FF6D00";
-            const flameGrad1 = isAlarm ? "#F87171" : "#FFD54F";
-            const flameGrad2 = isAlarm ? "#DC2626" : "#DD2C00";
+        function createTotemIcon(isAlarm = false, isOffline = false) {
+            const primaryColor = isAlarm ? "#EF4444" : (isOffline ? "#78716C" : "#FF6D00");
+            const flameGrad1 = isAlarm ? "#F87171" : (isOffline ? "#A8A29E" : "#FFD54F");
+            const flameGrad2 = isAlarm ? "#DC2626" : (isOffline ? "#57534E" : "#DD2C00");
 
             const svgHtml = `
                 <div class="totem-marker-pin">
@@ -535,6 +541,41 @@
             goToPage(2);
         }
 
+        // Função que atualiza as tags da página inicial (Página 1) de todas as cidades de uma vez
+        function monitorarTodasAsCidades() {
+            db.ref('cidades').on('value', (snapshot) => {
+                dadosCidadesGlobal = snapshot.val();
+                atualizarBadgesHome();
+            });
+        }
+
+        function atualizarBadgesHome() {
+            if (!dadosCidadesGlobal) return;
+            const t = translations[currentLang];
+            
+            for (let key in citiesData) {
+                const cData = dadosCidadesGlobal[key];
+                const badge = document.getElementById(`badge-${key}`);
+                const badgeText = document.getElementById(`badge-text-${key}`);
+                const badgeDot = document.getElementById(`badge-dot-${key}`);
+                
+                if (!badge) continue;
+
+                // Verificação Blindada (Booleano, Texto ou Número)
+                const isAtivo = cData && (cData.ativo === true || cData.ativo === "true" || cData.ativo === 1 || cData.ativo === "1");
+                
+                if (isAtivo) {
+                    badge.className = "inline-flex items-center space-x-1.5 px-3 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 rounded-full text-xs font-bold transition-colors";
+                    badgeDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                    badgeText.innerText = t.badgeActive;
+                } else {
+                    badge.className = "inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-500 border border-red-500/50 rounded-full text-xs font-bold transition-colors";
+                    badgeDot.className = "w-2 h-2 rounded-full bg-red-500";
+                    badgeText.innerText = t.badgeInactive;
+                }
+            }
+        }
+
         function escutarFirebase(cityKey) {
             if (escutaAtual) escutaAtual.off();
 
@@ -545,25 +586,26 @@
                 const t = translations[currentLang];
                 
                 if (data) {
-                    // Atualiza o cronômetro desta cidade com o momento atual
                     ultimaLeituraPorCidade[cityKey] = Date.now();
 
-                    // ======== NOVA LÓGICA DE ATIVO/INATIVO ========
-                    if (data.ativo === false) {
-                        // Se a cidade está inativa, mostra os valores zerados e status SEM SINAL
+                    // Verificação blindada do ativo (boolean, string ou int)
+                    const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
+
+                    if (!isAtivo) {
+                        // ==== ESTADO: INATIVO / SEM SINAL (Caixa Vermelha) ====
                         valTemp.innerText = '--';
                         valSmoke.innerText = '--';
                         valLora.innerText = '--';
                         
                         telemetryCard.classList.remove('fire-alarm-active');
-                        statusContainer.className = "bg-amber-950/40 border border-amber-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
-                        valStatus.className = "text-base sm:text-lg font-black text-amber-400 tracking-wider uppercase block";
+                        statusContainer.className = "bg-red-950/40 border border-red-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
+                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                        valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block";
                         valStatus.innerText = t.statusNoSignal;
 
-                        if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
+                        if (totemMarker) totemMarker.setIcon(createTotemIcon(false, true)); // Ícone cinza
                     } else {
-                        // Se a cidade está ativa (true), exibe os dados normais
+                        // ==== ESTADO: ATIVO ====
                         valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
                         valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
                         valLora.innerText = data.lora !== undefined ? data.lora : '--';
@@ -577,7 +619,10 @@
                             totemMarker.setLatLng([lat, lng]);
                         }
 
-                        if (data.alerta) {
+                        // Verificação blindada do alerta
+                        const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
+
+                        if (isAlerta) {
                             telemetryCard.classList.add('fire-alarm-active');
                             statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
                             statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
@@ -618,25 +663,28 @@
             }
         }
 
-        // Vigia que roda a cada 1 segundo checando se a cidade ativa ficou sem sinal por mais de 10 segundos
+        // Vigia de 10 segundos caso o Firebase não receba NENHUMA atualização (mesmo de inativo) do sistema
         setInterval(() => {
             const agora = Date.now();
             const t = translations[currentLang];
 
-            // Só dispara o vigia se houver falha de comunicação completa com o ESP32.
-            // Se o firebase está atualizando normal (ativo ou inativo), o ultimaLeituraPorCidade continuará sendo atualizado.
             if (agora - ultimaLeituraPorCidade[currentCityKey] > 10000) {
                 valTemp.innerText = '--';
                 valSmoke.innerText = '--';
                 valLora.innerText = '--';
                 
                 telemetryCard.classList.remove('fire-alarm-active');
-                statusContainer.className = "bg-amber-950/40 border border-amber-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
-                valStatus.className = "text-base sm:text-lg font-black text-amber-400 tracking-wider uppercase block";
+                statusContainer.className = "bg-red-950/40 border border-red-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block";
                 valStatus.innerText = t.statusNoSignal;
+
+                if (totemMarker) totemMarker.setIcon(createTotemIcon(false, true));
             }
         }, 1000);
+
+        // Inicializa o escutador geral da Home logo ao carregar a página
+        monitorarTodasAsCidades();
     </script>
 </body>
 </html>
