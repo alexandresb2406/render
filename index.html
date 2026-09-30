@@ -314,7 +314,7 @@
                 </div>
             </div>
 
-            <!-- ====== ESTADO INATIVO (Sem Sinal / Desconectado) ====== -->
+            <!-- ====== ESTADO INATIVO (Caso queira usar offline no futuro) ====== -->
             <div id="viewOffline" class="hidden p-8 sm:p-12 flex-col items-center justify-center text-center">
                 <div class="w-16 h-16 rounded-full bg-red-900/30 flex items-center justify-center mb-4 border border-red-500/30">
                     <i class="fa-solid fa-link-slash text-red-500 text-2xl"></i>
@@ -464,6 +464,20 @@
         const displayCoords = document.getElementById('displayCoords');
         const inputNickname = document.getElementById('inputNickname');
 
+        // ==========================================
+        // APENAS DESCONECTA DO FIREBASE (LIBERA VAGA)
+        // SEM MEXER NO STATUS OU NA INTERFACE
+        // ==========================================
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Aba minimizada/oculta: fecha a conexão com o Firebase para liberar a vaga
+                firebase.database().goOffline();
+            } else {
+                // Aba em foco novamente: restabelece a conexão
+                firebase.database().goOnline();
+            }
+        });
+
         function setLanguage(lang) {
             currentLang = lang;
             const t = translations[lang];
@@ -541,10 +555,10 @@
             });
         }
 
-        function createTotemIcon(isAlarm = false, isOffline = false) {
-            const primaryColor = isAlarm ? "#EF4444" : (isOffline ? "#78716C" : "#FF6D00");
-            const flameGrad1 = isAlarm ? "#F87171" : (isOffline ? "#A8A29E" : "#FFD54F");
-            const flameGrad2 = isAlarm ? "#DC2626" : (isOffline ? "#57534E" : "#DD2C00");
+        function createTotemIcon(isAlarm = false) {
+            const primaryColor = isAlarm ? "#EF4444" : "#FF6D00";
+            const flameGrad1 = isAlarm ? "#F87171" : "#FFD54F";
+            const flameGrad2 = isAlarm ? "#DC2626" : "#DD2C00";
 
             const svgHtml = `
                 <div class="totem-marker-pin">
@@ -639,36 +653,6 @@
             }
         }
 
-        function mostrarTelaDesconectado(nomeCidade, t) {
-            telemetryCard.className = "bg-red-950/80 border border-red-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl shadow-red-900/20 overflow-hidden";
-            telemetryCard.classList.remove('fire-alarm-active');
-            
-            viewActive.classList.add('hidden');
-            viewActive.classList.remove('flex');
-            
-            viewOffline.classList.remove('hidden');
-            viewOffline.classList.add('flex');
-            
-            displayCityNameOffline.innerText = nomeCidade;
-            document.getElementById('txtOfflineStatus').innerText = t.statusNoSignal;
-            
-            if (totemMarker) totemMarker.setIcon(createTotemIcon(false, true));
-        }
-
-        function mostrarTelaConectado(isAlerta, t) {
-            if (isAlerta) {
-                telemetryCard.className = "bg-stone-900/90 border-2 border-red-600 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden fire-alarm-active";
-            } else {
-                telemetryCard.className = "bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
-            }
-
-            viewOffline.classList.add('hidden');
-            viewOffline.classList.remove('flex');
-            
-            viewActive.classList.remove('hidden');
-            viewActive.classList.add('flex');
-        }
-
         function escutarFirebase(cityKey) {
             if (escutaAtual) escutaAtual.off();
             escutaAtual = db.ref('cidades/' + cityKey);
@@ -679,8 +663,6 @@
                 const cidadeNomeReal = citiesData[cityKey].name;
                 
                 if (data) {
-                    const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
-
                     const apelidoAtual = data.apelido ? data.apelido : cidadeNomeReal;
                     displayTotemNickname.innerText = apelidoAtual;
                     displayCitySub.innerText = `(${cidadeNomeReal})`;
@@ -689,39 +671,44 @@
                         inputNickname.value = data.apelido || '';
                     }
 
-                    if (!isAtivo) {
-                        mostrarTelaDesconectado(apelidoAtual, t);
+                    const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
+                    
+                    if (isAlerta) {
+                        telemetryCard.className = "bg-stone-900/90 border-2 border-red-600 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden fire-alarm-active";
                     } else {
-                        const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
-                        
-                        mostrarTelaConectado(isAlerta, t);
+                        telemetryCard.className = "bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
+                    }
 
-                        valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
-                        valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
-                        valLora.innerText = data.lora !== undefined ? data.lora : '--';
+                    viewOffline.classList.add('hidden');
+                    viewOffline.classList.remove('flex');
+                    viewActive.classList.remove('hidden');
+                    viewActive.classList.add('flex');
 
-                        const lat = data.lat || citiesData[cityKey].cityCoords[0];
-                        const lng = data.lng || citiesData[cityKey].cityCoords[1];
-                        displayCoords.innerText = `${t.coordsPrefix}: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                    valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
+                    valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
+                    valLora.innerText = data.lora !== undefined ? data.lora : '--';
 
-                        if (map) {
-                            map.setView([lat, lng], 14);
-                            totemMarker.setLatLng([lat, lng]);
-                        }
+                    const lat = data.lat || citiesData[cityKey].cityCoords[0];
+                    const lng = data.lng || citiesData[cityKey].cityCoords[1];
+                    displayCoords.innerText = `${t.coordsPrefix}: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
-                        if (isAlerta) {
-                            statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
-                            statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
-                            valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
-                            valStatus.innerText = t.statusAlert;
-                            if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
-                        } else {
-                            statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                            statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-                            valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
-                            valStatus.innerText = t.statusNormal;
-                            if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
-                        }
+                    if (map) {
+                        map.setView([lat, lng], 14);
+                        totemMarker.setLatLng([lat, lng]);
+                    }
+
+                    if (isAlerta) {
+                        statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
+                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
+                        valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
+                        valStatus.innerText = t.statusAlert;
+                        if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
+                    } else {
+                        statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
+                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                        valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
+                        valStatus.innerText = t.statusNormal;
+                        if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
                     }
                 }
             });
