@@ -440,12 +440,6 @@
         let escutaAtual = null;
         let dadosCidadesGlobal = null; 
 
-        let ultimaLeituraPorCidade = {
-            santa_rita: Date.now(),
-            cachoeira: Date.now(),
-            conceicao: Date.now()
-        };
-
         const page1 = document.getElementById('page1');
         const page2 = document.getElementById('page2');
         const btnBackHome = document.getElementById('btnBackHome');
@@ -668,7 +662,6 @@
                 const cidadeNomeReal = citiesData[cityKey].name;
                 
                 if (data) {
-                    ultimaLeituraPorCidade[cityKey] = Date.now();
                     const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
 
                     // Gerencia Apelido e Nome da Cidade
@@ -733,17 +726,6 @@
                 }
             }
         }
-
-        // Watchdog (verifica se o Firebase parou de atualizar por mais de 10s)
-        setInterval(() => {
-            const agora = Date.now();
-            const t = translations[currentLang];
-
-            if (agora - ultimaLeituraPorCidade[currentCityKey] > 10000) {
-                const apelidoAtual = displayTotemNickname.innerText || citiesData[currentCityKey].name;
-                mostrarTelaDesconectado(apelidoAtual, t);
-            }
-        }, 1000);
 
         monitorarTodasAsCidades();
     </script>
