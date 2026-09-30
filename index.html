@@ -238,13 +238,27 @@
             
             <!-- ====== ESTADO ATIVO (Online) ====== -->
             <div id="viewActive" class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div>
+                <div class="flex flex-col">
                     <div class="flex items-center space-x-2 text-orange-400 text-xs font-bold uppercase tracking-wider mb-1">
                         <i class="fa-solid fa-tower-cell animate-pulse"></i>
                         <span id="txtConnectedFirebase">Estação Conectada ao Firebase</span>
                     </div>
-                    <h2 id="displayCityName" class="text-2xl sm:text-3xl font-extrabold text-white">---</h2>
-                    <p id="displayCoords" class="text-stone-400 text-xs sm:text-sm mt-1 font-mono">Coordenadas: --, --</p>
+                    
+                    <!-- Apelido e Nome da Cidade -->
+                    <div class="flex items-baseline space-x-2 flex-wrap">
+                        <h2 id="displayTotemNickname" class="text-2xl sm:text-3xl font-extrabold text-white">---</h2>
+                        <span id="displayCitySub" class="text-sm font-semibold text-stone-400">---</span>
+                    </div>
+
+                    <!-- Configurar Apelido Personalizado -->
+                    <div class="mt-2.5 flex items-center space-x-2">
+                        <input type="text" id="inputNickname" placeholder="Ex: Fazenda Boa Vista" class="bg-stone-950 border border-stone-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-orange-500 w-56 sm:w-64">
+                        <button onclick="salvarApelido()" class="bg-stone-800 hover:bg-orange-600 text-stone-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition border border-stone-700">
+                            <i class="fa-solid fa-pen mr-1 text-orange-400"></i> <span id="txtBtnSaveNickname">Salvar Apelido</span>
+                        </button>
+                    </div>
+
+                    <p id="displayCoords" class="text-stone-400 text-xs sm:text-sm mt-2 font-mono">Coordenadas: --, --</p>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 w-full lg:w-auto">
@@ -385,7 +399,9 @@
                 statusNoSignal: "SEM SINAL",
                 offlineDesc: "A estação de telemetria não está enviando dados no momento. Verifique a energia, conectividade ou o sinal da central no local.",
                 citiesLabel: "Cidades:",
-                footerText: "© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas."
+                footerText: "© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.",
+                saveNickname: "Salvar Apelido",
+                placeholderNickname: "Ex: Fazenda Boa Vista"
             },
             en: {
                 headerSubtitle: "Fire Prevention Totem",
@@ -411,7 +427,9 @@
                 statusNoSignal: "NO SIGNAL",
                 offlineDesc: "The telemetry station is not sending data at the moment. Check the power, connectivity, or central signal on site.",
                 citiesLabel: "Cities:",
-                footerText: "© 2026 IgnisGuard — Fire Prevention and Telemetry Totem for Farms."
+                footerText: "© 2026 IgnisGuard — Fire Prevention and Telemetry Totem for Farms.",
+                saveNickname: "Save Nickname",
+                placeholderNickname: "Ex: Boa Vista Farm"
             }
         };
 
@@ -441,9 +459,11 @@
         const valSmoke = document.getElementById('valSmoke');
         const valTemp = document.getElementById('valTemp');
         const valLora = document.getElementById('valLora');
-        const displayCityName = document.getElementById('displayCityName');
+        const displayTotemNickname = document.getElementById('displayTotemNickname');
+        const displayCitySub = document.getElementById('displayCitySub');
         const displayCityNameOffline = document.getElementById('displayCityNameOffline');
         const displayCoords = document.getElementById('displayCoords');
+        const inputNickname = document.getElementById('inputNickname');
 
         function setLanguage(lang) {
             currentLang = lang;
@@ -472,10 +492,11 @@
             document.getElementById('txtCitiesLabel').innerText = t.citiesLabel;
             document.getElementById('txtFooter').innerText = t.footerText;
             document.getElementById('txtOfflineDesc').innerText = t.offlineDesc;
+            document.getElementById('txtBtnSaveNickname').innerText = t.saveNickname;
+            inputNickname.placeholder = t.placeholderNickname;
 
             document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
 
-            // Atualiza status textuais visiveis
             if (valStatus.innerText.includes("NORMAL")) valStatus.innerText = t.statusNormal;
             else if (valStatus.innerText.includes("DETECTADO") || valStatus.innerText.includes("DETECTED")) valStatus.innerText = t.statusAlert;
             else if (valStatus.innerText.includes("AGUARDANDO") || valStatus.innerText.includes("WAITING")) valStatus.innerText = t.statusWaiting;
@@ -488,6 +509,22 @@
             }
 
             atualizarBadgesHome();
+        }
+
+        function salvarApelido() {
+            const novoApelido = inputNickname.value.trim();
+            db.ref('cidades/' + currentCityKey).update({
+                apelido: novoApelido
+            }, (error) => {
+                if (!error) {
+                    const btn = event.currentTarget;
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Salvo!';
+                    setTimeout(() => {
+                        btn.innerHTML = `<i class="fa-solid fa-pen mr-1 text-orange-400"></i> <span id="txtBtnSaveNickname">${translations[currentLang].saveNickname}</span>`;
+                    }, 2000);
+                }
+            });
         }
 
         function createTotemIcon(isAlarm = false, isOffline = false) {
@@ -552,7 +589,6 @@
             currentCityKey = cityKey;
             const city = citiesData[cityKey];
 
-            displayCityName.innerText = city.name;
             updateQuickButtons();
             escutarFirebase(cityKey);
 
@@ -629,13 +665,23 @@
             escutaAtual.on('value', (snapshot) => {
                 const data = snapshot.val();
                 const t = translations[currentLang];
+                const cidadeNomeReal = citiesData[cityKey].name;
                 
                 if (data) {
                     ultimaLeituraPorCidade[cityKey] = Date.now();
                     const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
 
+                    // Gerencia Apelido e Nome da Cidade
+                    const apelidoAtual = data.apelido ? data.apelido : cidadeNomeReal;
+                    displayTotemNickname.innerText = apelidoAtual;
+                    displayCitySub.innerText = `(${cidadeNomeReal})`;
+
+                    if (document.activeElement !== inputNickname) {
+                        inputNickname.value = data.apelido || '';
+                    }
+
                     if (!isAtivo) {
-                        mostrarTelaDesconectado(citiesData[cityKey].name, t);
+                        mostrarTelaDesconectado(apelidoAtual, t);
                     } else {
                         const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
                         
@@ -694,7 +740,8 @@
             const t = translations[currentLang];
 
             if (agora - ultimaLeituraPorCidade[currentCityKey] > 10000) {
-                mostrarTelaDesconectado(citiesData[currentCityKey].name, t);
+                const apelidoAtual = displayTotemNickname.innerText || citiesData[currentCityKey].name;
+                mostrarTelaDesconectado(apelidoAtual, t);
             }
         }, 1000);
 
