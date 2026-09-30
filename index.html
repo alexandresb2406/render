@@ -251,10 +251,13 @@
                     </div>
 
                     <!-- Configurar Apelido Personalizado -->
-                    <div class="mt-2.5 flex items-center space-x-2">
-                        <input type="text" id="inputNickname" placeholder="Ex: Fazenda Boa Vista" class="bg-stone-950 border border-stone-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-orange-500 w-56 sm:w-64">
+                    <div class="mt-2.5 flex items-center space-x-2 flex-wrap gap-2">
+                        <input type="text" id="inputNickname" placeholder="Ex: Fazenda Boa Vista" class="bg-stone-950 border border-stone-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-orange-500 w-52 sm:w-60">
                         <button onclick="salvarApelido()" class="bg-stone-800 hover:bg-orange-600 text-stone-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition border border-stone-700">
                             <i class="fa-solid fa-pen mr-1 text-orange-400"></i> <span id="txtBtnSaveNickname">Salvar Apelido</span>
+                        </button>
+                        <button onclick="resetarApelido()" class="bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-stone-700">
+                            <i class="fa-solid fa-rotate-left mr-1 text-stone-400"></i> <span id="txtBtnResetNickname">Restaurar</span>
                         </button>
                     </div>
 
@@ -401,6 +404,7 @@
                 citiesLabel: "Cidades:",
                 footerText: "© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.",
                 saveNickname: "Salvar Apelido",
+                resetNickname: "Restaurar",
                 placeholderNickname: "Ex: Fazenda Boa Vista"
             },
             en: {
@@ -429,6 +433,7 @@
                 citiesLabel: "Cities:",
                 footerText: "© 2026 IgnisGuard — Fire Prevention and Telemetry Totem for Farms.",
                 saveNickname: "Save Nickname",
+                resetNickname: "Reset",
                 placeholderNickname: "Ex: Boa Vista Farm"
             }
         };
@@ -487,6 +492,7 @@
             document.getElementById('txtFooter').innerText = t.footerText;
             document.getElementById('txtOfflineDesc').innerText = t.offlineDesc;
             document.getElementById('txtBtnSaveNickname').innerText = t.saveNickname;
+            document.getElementById('txtBtnResetNickname').innerText = t.resetNickname;
             inputNickname.placeholder = t.placeholderNickname;
 
             document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
@@ -512,10 +518,24 @@
             }, (error) => {
                 if (!error) {
                     const btn = event.currentTarget;
-                    const originalHTML = btn.innerHTML;
                     btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Salvo!';
                     setTimeout(() => {
                         btn.innerHTML = `<i class="fa-solid fa-pen mr-1 text-orange-400"></i> <span id="txtBtnSaveNickname">${translations[currentLang].saveNickname}</span>`;
+                    }, 2000);
+                }
+            });
+        }
+
+        function resetarApelido() {
+            db.ref('cidades/' + currentCityKey).update({
+                apelido: null
+            }, (error) => {
+                if (!error) {
+                    inputNickname.value = '';
+                    const btn = event.currentTarget;
+                    btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Restaurado!';
+                    setTimeout(() => {
+                        btn.innerHTML = `<i class="fa-solid fa-rotate-left mr-1 text-stone-400"></i> <span id="txtBtnResetNickname">${translations[currentLang].resetNickname}</span>`;
                     }, 2000);
                 }
             });
@@ -581,11 +601,8 @@
 
         function selectCity(cityKey) {
             currentCityKey = cityKey;
-            const city = citiesData[cityKey];
-
             updateQuickButtons();
             escutarFirebase(cityKey);
-
             goToPage(2);
         }
 
@@ -664,7 +681,6 @@
                 if (data) {
                     const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
 
-                    // Gerencia Apelido e Nome da Cidade
                     const apelidoAtual = data.apelido ? data.apelido : cidadeNomeReal;
                     displayTotemNickname.innerText = apelidoAtual;
                     displayCitySub.innerText = `(${cidadeNomeReal})`;
