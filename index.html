@@ -232,9 +232,12 @@
 
     <!-- PÁGINA 2: DASHBOARD DE MONITORAMENTO E MAPA -->
     <main id="page2" class="hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
         <!-- CARD DE TELEMETRIA -->
-        <div id="telemetryCard" class="bg-stone-900/90 border border-stone-800 rounded-2xl p-5 sm:p-6 mb-6 transition-all duration-300 shadow-xl">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div id="telemetryCard" class="bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden">
+            
+            <!-- ====== ESTADO ATIVO (Online) ====== -->
+            <div id="viewActive" class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
                     <div class="flex items-center space-x-2 text-orange-400 text-xs font-bold uppercase tracking-wider mb-1">
                         <i class="fa-solid fa-tower-cell animate-pulse"></i>
@@ -292,6 +295,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- ====== ESTADO INATIVO (Sem Sinal / Desconectado) ====== -->
+            <div id="viewOffline" class="hidden p-8 sm:p-12 flex-col items-center justify-center text-center">
+                <div class="w-16 h-16 rounded-full bg-red-900/30 flex items-center justify-center mb-4 border border-red-500/30">
+                    <i class="fa-solid fa-link-slash text-red-500 text-2xl"></i>
+                </div>
+                <h2 id="displayCityNameOffline" class="text-3xl sm:text-4xl font-extrabold text-white mb-3">---</h2>
+                <div class="inline-flex items-center space-x-2 bg-red-950 border border-red-600 px-4 py-2 rounded-full shadow-inner">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span id="txtOfflineStatus" class="text-red-400 font-black tracking-widest uppercase text-sm">SEM SINAL</span>
+                </div>
+                <p id="txtOfflineDesc" class="text-red-300/80 text-sm mt-5 max-w-md mx-auto">
+                    A estação de telemetria não está enviando dados no momento. Verifique a energia, conectividade ou o sinal da central no local.
+                </p>
             </div>
         </div>
 
@@ -365,6 +383,7 @@
                 statusAlert: "INCÊNDIO DETECTADO!",
                 statusWaiting: "AGUARDANDO DADOS",
                 statusNoSignal: "SEM SINAL",
+                offlineDesc: "A estação de telemetria não está enviando dados no momento. Verifique a energia, conectividade ou o sinal da central no local.",
                 citiesLabel: "Cidades:",
                 footerText: "© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas."
             },
@@ -390,6 +409,7 @@
                 statusAlert: "FIRE DETECTED!",
                 statusWaiting: "WAITING FOR DATA",
                 statusNoSignal: "NO SIGNAL",
+                offlineDesc: "The telemetry station is not sending data at the moment. Check the power, connectivity, or central signal on site.",
                 citiesLabel: "Cities:",
                 footerText: "© 2026 IgnisGuard — Fire Prevention and Telemetry Totem for Farms."
             }
@@ -400,9 +420,8 @@
         let map = null;
         let totemMarker = null;
         let escutaAtual = null;
-        let dadosCidadesGlobal = null; // Guarda os dados para facilitar a tradução do badge inicial
+        let dadosCidadesGlobal = null; 
 
-        // Controle de tempo do último pacote recebido por cidade
         let ultimaLeituraPorCidade = {
             santa_rita: Date.now(),
             cachoeira: Date.now(),
@@ -413,6 +432,9 @@
         const page2 = document.getElementById('page2');
         const btnBackHome = document.getElementById('btnBackHome');
         const telemetryCard = document.getElementById('telemetryCard');
+        const viewActive = document.getElementById('viewActive');
+        const viewOffline = document.getElementById('viewOffline');
+        
         const statusContainer = document.getElementById('statusContainer');
         const statusDot = document.getElementById('statusDot');
         const valStatus = document.getElementById('valStatus');
@@ -420,6 +442,7 @@
         const valTemp = document.getElementById('valTemp');
         const valLora = document.getElementById('valLora');
         const displayCityName = document.getElementById('displayCityName');
+        const displayCityNameOffline = document.getElementById('displayCityNameOffline');
         const displayCoords = document.getElementById('displayCoords');
 
         function setLanguage(lang) {
@@ -448,27 +471,22 @@
             document.getElementById('txtLabelStatus').innerText = t.labelStatus;
             document.getElementById('txtCitiesLabel').innerText = t.citiesLabel;
             document.getElementById('txtFooter').innerText = t.footerText;
+            document.getElementById('txtOfflineDesc').innerText = t.offlineDesc;
 
             document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
 
-            // Atualiza status se necessário na página 2
-            if (valStatus.innerText.includes("NORMAL")) {
-                valStatus.innerText = t.statusNormal;
-            } else if (valStatus.innerText.includes("DETECTADO") || valStatus.innerText.includes("DETECTED")) {
-                valStatus.innerText = t.statusAlert;
-            } else if (valStatus.innerText.includes("AGUARDANDO") || valStatus.innerText.includes("WAITING")) {
-                valStatus.innerText = t.statusWaiting;
-            } else if (valStatus.innerText.includes("SEM SINAL") || valStatus.innerText.includes("NO SIGNAL")) {
-                valStatus.innerText = t.statusNoSignal;
-            }
+            // Atualiza status textuais visiveis
+            if (valStatus.innerText.includes("NORMAL")) valStatus.innerText = t.statusNormal;
+            else if (valStatus.innerText.includes("DETECTADO") || valStatus.innerText.includes("DETECTED")) valStatus.innerText = t.statusAlert;
+            else if (valStatus.innerText.includes("AGUARDANDO") || valStatus.innerText.includes("WAITING")) valStatus.innerText = t.statusWaiting;
+            
+            document.getElementById('txtOfflineStatus').innerText = t.statusNoSignal;
 
-            // Atualiza marcadores do mapa
             if (totemMarker) {
                 const defaultCity = citiesData[currentCityKey];
                 totemMarker.setPopupContent(`<b>Totem IgnisGuard</b><br>${defaultCity.name}`);
             }
 
-            // Atualiza textos dos badges na Página 1
             atualizarBadgesHome();
         }
 
@@ -541,7 +559,6 @@
             goToPage(2);
         }
 
-        // Função que atualiza as tags da página inicial (Página 1) de todas as cidades de uma vez
         function monitorarTodasAsCidades() {
             db.ref('cidades').on('value', (snapshot) => {
                 dadosCidadesGlobal = snapshot.val();
@@ -561,7 +578,6 @@
                 
                 if (!badge) continue;
 
-                // Verificação Blindada (Booleano, Texto ou Número)
                 const isAtivo = cData && (cData.ativo === true || cData.ativo === "true" || cData.ativo === 1 || cData.ativo === "1");
                 
                 if (isAtivo) {
@@ -576,9 +592,38 @@
             }
         }
 
+        function mostrarTelaDesconectado(nomeCidade, t) {
+            telemetryCard.className = "bg-red-950/80 border border-red-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl shadow-red-900/20 overflow-hidden";
+            telemetryCard.classList.remove('fire-alarm-active');
+            
+            viewActive.classList.add('hidden');
+            viewActive.classList.remove('flex');
+            
+            viewOffline.classList.remove('hidden');
+            viewOffline.classList.add('flex');
+            
+            displayCityNameOffline.innerText = nomeCidade;
+            document.getElementById('txtOfflineStatus').innerText = t.statusNoSignal;
+            
+            if (totemMarker) totemMarker.setIcon(createTotemIcon(false, true));
+        }
+
+        function mostrarTelaConectado(isAlerta, t) {
+            if (isAlerta) {
+                telemetryCard.className = "bg-stone-900/90 border-2 border-red-600 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden fire-alarm-active";
+            } else {
+                telemetryCard.className = "bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
+            }
+
+            viewOffline.classList.add('hidden');
+            viewOffline.classList.remove('flex');
+            
+            viewActive.classList.remove('hidden');
+            viewActive.classList.add('flex');
+        }
+
         function escutarFirebase(cityKey) {
             if (escutaAtual) escutaAtual.off();
-
             escutaAtual = db.ref('cidades/' + cityKey);
 
             escutaAtual.on('value', (snapshot) => {
@@ -587,25 +632,15 @@
                 
                 if (data) {
                     ultimaLeituraPorCidade[cityKey] = Date.now();
-
-                    // Verificação blindada do ativo (boolean, string ou int)
                     const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
 
                     if (!isAtivo) {
-                        // ==== ESTADO: INATIVO / SEM SINAL (Caixa Vermelha) ====
-                        valTemp.innerText = '--';
-                        valSmoke.innerText = '--';
-                        valLora.innerText = '--';
-                        
-                        telemetryCard.classList.remove('fire-alarm-active');
-                        statusContainer.className = "bg-red-950/40 border border-red-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
-                        valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block";
-                        valStatus.innerText = t.statusNoSignal;
-
-                        if (totemMarker) totemMarker.setIcon(createTotemIcon(false, true)); // Ícone cinza
+                        mostrarTelaDesconectado(citiesData[cityKey].name, t);
                     } else {
-                        // ==== ESTADO: ATIVO ====
+                        const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
+                        
+                        mostrarTelaConectado(isAlerta, t);
+
                         valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
                         valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
                         valLora.innerText = data.lora !== undefined ? data.lora : '--';
@@ -619,18 +654,13 @@
                             totemMarker.setLatLng([lat, lng]);
                         }
 
-                        // Verificação blindada do alerta
-                        const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
-
                         if (isAlerta) {
-                            telemetryCard.classList.add('fire-alarm-active');
                             statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
                             statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
                             valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
                             valStatus.innerText = t.statusAlert;
                             if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
                         } else {
-                            telemetryCard.classList.remove('fire-alarm-active');
                             statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
                             statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
                             valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
@@ -638,11 +668,6 @@
                             if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
                         }
                     }
-                } else {
-                    valTemp.innerText = '--';
-                    valSmoke.innerText = '--';
-                    valLora.innerText = '--';
-                    valStatus.innerText = t.statusWaiting;
                 }
             });
         }
@@ -663,27 +688,16 @@
             }
         }
 
-        // Vigia de 10 segundos caso o Firebase não receba NENHUMA atualização (mesmo de inativo) do sistema
+        // Watchdog (verifica se o Firebase parou de atualizar por mais de 10s)
         setInterval(() => {
             const agora = Date.now();
             const t = translations[currentLang];
 
             if (agora - ultimaLeituraPorCidade[currentCityKey] > 10000) {
-                valTemp.innerText = '--';
-                valSmoke.innerText = '--';
-                valLora.innerText = '--';
-                
-                telemetryCard.classList.remove('fire-alarm-active');
-                statusContainer.className = "bg-red-950/40 border border-red-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
-                valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block";
-                valStatus.innerText = t.statusNoSignal;
-
-                if (totemMarker) totemMarker.setIcon(createTotemIcon(false, true));
+                mostrarTelaDesconectado(citiesData[currentCityKey].name, t);
             }
         }, 1000);
 
-        // Inicializa o escutador geral da Home logo ao carregar a página
         monitorarTodasAsCidades();
     </script>
 </body>
