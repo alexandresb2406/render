@@ -161,14 +161,6 @@
 
     <!-- PÁGINA 1: SELEÇÃO DE LOCAL -->
     <main id="page1" class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex flex-col justify-center">
-        
-        <!-- MENSAGEM EM DESTAQUE NA TELA INICIAL -->
-        <div class="text-center mb-6">
-            <h1 class="text-4xl sm:text-6xl font-black text-red-600 tracking-wider uppercase animate-pulse drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]">
-                Luiz Guilherme AMA penis
-            </h1>
-        </div>
-
         <div class="text-center mb-12">
             <h1 id="txtHomeTitle" class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
                 Qual local você quer avaliar?
@@ -478,8 +470,10 @@
         // ==========================================
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
+                // Aba minimizada/oculta: fecha a conexão com o Firebase para liberar a vaga
                 firebase.database().goOffline();
             } else {
+                // Aba em foco novamente: restabelece a conexão
                 firebase.database().goOnline();
             }
         });
