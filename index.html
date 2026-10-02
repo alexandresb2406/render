@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IgnisGuard - Barbie Dreamland & Royal Castle Edition ✨💖</title>
+    <title>IgnisGuard - Sistema de Prevenção de Incêndios</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,543 +20,336 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         
         :root {
-            --barbie-dark-pink: #D90077;
-            --barbie-hot-pink: #FF1493;
-            --barbie-pink: #FF69B4;
-            --barbie-light-pink: #FFB6C1;
-            --barbie-magenta: #C71585;
-            --barbie-purple: #8A2BE2;
-            --barbie-gold: #FFD700;
-            --barbie-card: rgba(255, 105, 180, 0.18);
-            --barbie-glass: rgba(255, 20, 147, 0.25);
+            --brand-orange: #E65100;
+            --brand-orange-light: #FF6D00;
+            --brand-brown-dark: #2C1810;
+            --brand-brown-wood: #4E342E;
+            --brand-black: #0D0D0D;
+            --brand-surface: #181412;
+            --brand-card: #231C18;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at 50% 20%, #4a0028 0%, #200012 60%, #0d0007 100%);
-            color: #fff0f6;
+            background-color: var(--brand-black);
+            color: #f3f4f6;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Sparkle Background Elements */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, #ffb6c1, rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 80px 120px, #ffd700, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 150px 180px, #fff, rgba(0,0,0,0)),
-                radial-gradient(3px 3px at 220px 50px, #ff1493, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 300px 250px, #ffd700, rgba(0,0,0,0));
-            background-repeat: repeat;
-            background-size: 350px 350px;
-            opacity: 0.55;
-            z-index: -1;
-            animation: floatingSparkles 12s linear infinite;
+        .bg-sunset-gradient {
+            background: linear-gradient(135deg, #181412 0%, #2A170F 50%, #3D1C06 100%);
         }
 
-        @keyframes floatingSparkles {
-            0% { background-position: 0 0; }
-            100% { background-position: 350px 700px; }
-        }
-
-        .barbie-font-title {
-            font-family: 'Fredoka', cursive, sans-serif;
-        }
-
-        .barbie-royal-script {
-            font-family: 'Great Vibes', cursive;
-        }
-
-        /* Glare & Glassmorphic Barbie Style */
-        .barbie-glass-box {
-            background: linear-gradient(135deg, rgba(255, 105, 180, 0.22) 0%, rgba(199, 21, 133, 0.3) 100%);
-            backdrop-filter: blur(16px);
-            border: 2px solid rgba(255, 182, 193, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(255, 20, 147, 0.35), inset 0 0 15px rgba(255, 192, 203, 0.2);
-        }
-
-        .barbie-glass-box:hover {
-            border-color: rgba(255, 215, 0, 0.8);
-            box-shadow: 0 12px 40px 0 rgba(255, 20, 147, 0.5), 0 0 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .barbie-border-rainbow {
-            border-image: linear-gradient(to right, #ff1493, #ff69b4, #ffd700, #ff1493) 1;
-        }
-
-        @keyframes fireAlertPulseBarbie {
+        @keyframes fireAlertPulse {
             0% {
-                box-shadow: 0 0 0 0 rgba(255, 0, 100, 0.9), inset 0 0 30px rgba(255, 20, 147, 0.8);
-                border-color: #ff0055;
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(220, 38, 38, 0.6);
+                border-color: #ef4444;
             }
             50% {
-                box-shadow: 0 0 60px 25px rgba(255, 20, 147, 1), inset 0 0 50px rgba(255, 215, 0, 0.9);
-                border-color: #ffd700;
+                box-shadow: 0 0 50px 20px rgba(239, 68, 68, 0.9), inset 0 0 40px rgba(239, 68, 68, 0.8);
+                border-color: #f87171;
             }
             100% {
-                box-shadow: 0 0 0 0 rgba(255, 0, 100, 0.9), inset 0 0 30px rgba(255, 20, 147, 0.8);
-                border-color: #ff0055;
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(220, 38, 38, 0.6);
+                border-color: #ef4444;
             }
         }
 
         .fire-alarm-active {
-            animation: fireAlertPulseBarbie 0.8s infinite !important;
+            animation: fireAlertPulse 0.8s infinite !important;
         }
 
-        @keyframes textBlinkBarbie {
-            0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px #ff1493); }
-            50% { opacity: 0.4; transform: scale(0.96); filter: drop-shadow(0 0 20px #ffd700); }
+        @keyframes textBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.98); }
         }
 
         .blink-alarm {
-            animation: textBlinkBarbie 0.7s infinite;
+            animation: textBlink 0.7s infinite;
         }
 
-        @keyframes crownGlint {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(-3deg); }
-            75% { transform: translateY(-2px) rotate(3deg); }
+        @keyframes flameFlicker {
+            0%, 100% { transform: scale(1) rotate(-1deg); }
+            25% { transform: scale(1.08) rotate(1deg); }
+            50% { transform: scale(0.95) rotate(-2deg); }
+            75% { transform: scale(1.05) rotate(2deg); }
         }
 
-        .crown-animated {
-            animation: crownGlint 2.5s ease-in-out infinite;
+        .flame-animated {
+            animation: flameFlicker 0.6s infinite ease-in-out;
+            transform-origin: bottom center;
         }
 
-        @keyframes floatBarbie {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(1.5deg); }
-        }
-
-        .barbie-float {
-            animation: floatBarbie 4s ease-in-out infinite;
-        }
-
-        @keyframes catTail {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(8deg); }
-        }
-
-        .cat-tail-anim {
-            transform-origin: bottom left;
-            animation: catTail 3s ease-in-out infinite;
-        }
-
-        @keyframes speechPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255,105,180,0.6); }
-            50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(255,215,0,0.8); }
-        }
-
-        .speech-bubble-anim {
-            animation: speechPulse 3s infinite ease-in-out;
-        }
-
-        /* Leaflet Popups Barbie Styling */
         .leaflet-popup-content-wrapper {
-            background: linear-gradient(135deg, #3d0021 0%, #800040 100%) !important;
-            color: #ffe6f2 !important;
-            border: 2px solid #ff69b4 !important;
-            border-radius: 20px !important;
-            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.6) !important;
-            font-family: 'Fredoka', sans-serif !important;
+            background: #1e1714 !important;
+            color: #f3f4f6 !important;
+            border: 1px solid #4E342E;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7) !important;
         }
         .leaflet-popup-tip {
-            background: #800040 !important;
+            background: #1e1714 !important;
         }
 
         .totem-marker-pin {
-            width: 52px;
-            height: 66px;
+            width: 44px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            filter: drop-shadow(0px 6px 12px rgba(255, 20, 147, 0.7));
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.6));
+            transition: transform 0.3s ease;
         }
         .totem-marker-pin:hover {
-            transform: scale(1.25) rotate(5deg);
+            transform: scale(1.15);
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-pink-500 selection:text-white">
+<body class="min-h-screen flex flex-col justify-between selection:bg-orange-600 selection:text-white">
 
-    <!-- CABEÇALHO DA MARCA BARBIE -->
-    <header class="border-b-2 border-pink-500/60 bg-pink-950/80 backdrop-blur-md sticky top-0 z-50 shadow-2xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
+    <!-- CABEÇALHO DA MARCA -->
+    <header class="border-b border-stone-800/80 bg-stone-950/90 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer group" onclick="goToPage(1)">
-                <!-- Ícone da Coroa da Barbie / Castelo -->
-                <div class="relative w-14 h-14 flex items-center justify-center bg-gradient-to-tr from-pink-600 via-pink-500 to-amber-300 rounded-2xl border-2 border-amber-300/80 shadow-lg group-hover:scale-105 transition-transform duration-300">
-                    <svg class="w-10 h-10 crown-animated" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 75L25 35L42 55L50 20L58 55L75 35L85 75H15Z" fill="url(#barbieCrownGrad)" stroke="#FFE066" stroke-width="3"/>
-                        <circle cx="15" cy="75" r="4" fill="#FFF"/>
-                        <circle cx="25" cy="35" r="5" fill="#FF1493"/>
-                        <circle cx="50" cy="20" r="6" fill="#FFD700"/>
-                        <circle cx="75" cy="35" r="5" fill="#FF1493"/>
-                        <circle cx="85" cy="75" r="4" fill="#FFF"/>
-                        <rect x="20" y="75" width="60" height="8" rx="2" fill="#FF1493" stroke="#FFD700" stroke-width="2"/>
+                <div class="relative w-11 h-11 flex items-center justify-center bg-stone-900 rounded-xl border border-amber-800/50 group-hover:border-orange-500 transition-colors duration-300">
+                    <svg class="w-8 h-8" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path class="flame-animated" d="M30 78C30 78 28 65 38 52C40 60 48 58 50 42C58 50 68 56 68 70C68 81 59 88 48 88C37 88 30 82 30 78Z" fill="url(#headerFlameGrad)"/>
+                        <rect x="38" y="22" width="24" height="48" rx="2" fill="#6D4C41" stroke="#3E2723" stroke-width="2"/>
+                        <line x1="42" y1="30" x2="58" y2="30" stroke="#3E2723" stroke-width="2"/>
+                        <line x1="42" y1="42" x2="58" y2="42" stroke="#3E2723" stroke-width="2"/>
+                        <line x1="42" y1="54" x2="58" y2="54" stroke="#3E2723" stroke-width="2"/>
+                        <circle cx="50" cy="36" r="1.5" fill="#FFB300"/>
+                        <circle cx="50" cy="48" r="1.5" fill="#FFB300"/>
                         <defs>
-                            <linearGradient id="barbieCrownGrad" x1="50" y1="20" x2="50" y2="83" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#FFD700"/>
-                                <stop offset="0.5" stop-color="#FF69B4"/>
-                                <stop offset="1" stop-color="#C71585"/>
+                            <linearGradient id="headerFlameGrad" x1="49" y1="42" x2="49" y2="88" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#FFD54F"/>
+                                <stop offset="0.5" stop-color="#FF6D00"/>
+                                <stop offset="1" stop-color="#D84315"/>
                             </linearGradient>
                         </defs>
                     </svg>
-                    <span class="absolute -top-1 -right-1 text-xs">✨</span>
                 </div>
                 <div>
-                    <div class="flex items-center space-x-1.5">
-                        <span class="text-3xl font-black tracking-wider text-pink-300 drop-shadow-[0_2px_10px_rgba(255,20,147,0.8)] barbie-font-title">IGNIS</span>
-                        <span class="text-3xl font-black tracking-wider text-amber-300 drop-shadow-[0_2px_10px_rgba(255,215,0,0.8)] barbie-font-title">GUARD</span>
-                        <span class="text-xl">👑💖</span>
+                    <div class="flex items-center space-x-1">
+                        <span class="text-2xl font-black tracking-wider text-white">IGNIS</span>
+                        <span class="text-2xl font-black tracking-wider text-orange-500">GUARD</span>
                     </div>
-                    <span id="txtHeaderSubtitle" class="text-[11px] block text-pink-200 font-extrabold tracking-widest uppercase -mt-1 drop-shadow">
-                        ✨ Totem Barbie de Prevenção de Incêndios ✨
-                    </span>
+                    <span id="txtHeaderSubtitle" class="text-[10px] block text-stone-400 font-bold tracking-widest uppercase -mt-1">Totem de Prevenção de Incêndios</span>
                 </div>
             </div>
 
             <div class="flex items-center space-x-3">
                 <!-- SELETOR DE IDIOMA -->
-                <div class="bg-pink-900/90 border border-pink-500/80 rounded-2xl p-1 flex items-center space-x-1 shadow-inner">
-                    <button onclick="setLanguage('pt')" id="btnLangPt" class="px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md transition">PT 🇧🇷</button>
-                    <button onclick="setLanguage('en')" id="btnLangEn" class="px-3 py-1 rounded-xl text-xs font-bold text-pink-200 hover:text-white transition">EN 👑</button>
+                <div class="bg-stone-900 border border-stone-800 rounded-xl p-1 flex items-center space-x-1">
+                    <button onclick="setLanguage('pt')" id="btnLangPt" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition">PT</button>
+                    <button onclick="setLanguage('en')" id="btnLangEn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition">EN</button>
                 </div>
 
-                <button id="btnBackHome" onclick="goToPage(1)" class="hidden items-center space-x-2 bg-gradient-to-r from-pink-700 to-purple-700 hover:from-pink-600 hover:to-purple-600 text-white px-4 py-2 rounded-2xl border-2 border-amber-300 shadow-lg transition duration-200 text-xs sm:text-sm font-black">
-                    <i class="fa-solid fa-crown text-amber-300"></i>
+                <button id="btnBackHome" onclick="goToPage(1)" class="hidden items-center space-x-2 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white px-4 py-2 rounded-xl border border-stone-700/85 transition duration-200 text-xs sm:text-sm font-semibold">
+                    <i class="fa-solid fa-arrow-left text-orange-500"></i>
                     <span id="txtBtnChangeLocation">Mudar de Local</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- BANNER DA BARBIE PRINCESA & SAUDAÇÃO AO DONO DO PC -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
-        <div class="barbie-glass-box rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border-2 border-pink-400/80 shadow-[0_0_50px_rgba(255,20,147,0.4)]">
-            
-            <!-- Brilhos Flutuantes de Fundo -->
-            <div class="absolute -top-10 -left-10 w-40 h-40 bg-pink-500/30 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-400/30 rounded-full blur-3xl pointer-events-none"></div>
-
-            <!-- ILUSTRAÇÃO DA BARBIE PRINCESA ANNALIESE & SERAFINA -->
-            <div class="relative flex-shrink-0 barbie-float z-10 flex flex-col items-center">
-                <div class="relative w-48 h-56 sm:w-56 sm:h-64 flex items-center justify-center">
-                    <div class="absolute inset-0 bg-gradient-to-t from-pink-500/50 via-purple-500/30 to-amber-300/40 rounded-full blur-2xl animate-pulse"></div>
-                    
-                    <svg class="w-full h-full drop-shadow-[0_10px_20px_rgba(255,20,147,0.7)]" viewBox="0 0 220 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 180L40 120L60 180H20Z" fill="#800040" opacity="0.4"/>
-                        <path d="M160 180L180 110L200 180H160Z" fill="#800040" opacity="0.4"/>
-                        
-                        <path d="M50 110C40 140 30 190 45 240C55 245 70 240 75 220C80 180 75 140 75 120Z" fill="#FFE066"/>
-                        <path d="M170 110C180 140 190 190 175 240C165 245 150 240 145 220C140 180 145 140 145 120Z" fill="#FFD700"/>
-                        <path d="M65 60C50 70 45 100 50 140C60 170 70 210 60 250C90 255 130 255 160 250C150 210 160 170 170 140C175 100 170 70 155 60C135 45 85 45 65 60Z" fill="#FFF099"/>
-                        
-                        <ellipse cx="110" cy="95" rx="32" ry="38" fill="#FFE4C4"/>
-                        
-                        <ellipse cx="96" cy="92" rx="6" ry="7" fill="#1E90FF"/>
-                        <circle cx="98" cy="90" r="2.5" fill="#FFF"/>
-                        <ellipse cx="124" cy="92" rx="6" ry="7" fill="#1E90FF"/>
-                        <circle cx="126" cy="90" r="2.5" fill="#FFF"/>
-                        <path d="M88 88C92 84 102 84 104 88" stroke="#4A0028" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M116 88C118 84 128 84 132 88" stroke="#4A0028" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M90 82C95 79 101 80 104 82" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M116 82C119 80 125 79 130 82" stroke="#D4AF37" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M102 118C106 123 114 123 118 118C114 121 106 121 102 118Z" fill="#FF1493"/>
-                        <path d="M103 117C107 115 113 115 117 117" stroke="#E60073" stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="86" cy="104" r="7" fill="#FF69B4" opacity="0.45"/>
-                        <circle cx="134" cy="104" r="7" fill="#FF69B4" opacity="0.45"/>
-
-                        <path d="M78 130C78 130 60 170 40 260H180C160 170 142 130 142 130L110 145L78 130Z" fill="url(#skirtGrad)"/>
-                        <path d="M88 130C88 130 110 160 132 130C132 180 110 260 110 260C110 260 88 180 88 130Z" fill="#FFF0F5" opacity="0.9"/>
-                        <path d="M85 130L110 150L135 130L125 180H95L85 130Z" fill="#FF1493" stroke="#FFD700" stroke-width="3"/>
-                        <circle cx="110" cy="138" r="7" fill="#FF69B4" stroke="#FFF" stroke-width="2"/>
-                        
-                        <path d="M92 122C100 130 120 130 128 122" stroke="#FFD700" stroke-width="3" stroke-dasharray="2 3"/>
-                        <polygon points="110,126 115,133 110,140 105,133" fill="#00FFFF" stroke="#FFD700" stroke-width="1.5"/>
-
-                        <path d="M82 66L92 38L102 52L110 26L118 52L128 38L138 66H82Z" fill="url(#crownGoldGrad)" stroke="#FFF" stroke-width="1.5"/>
-                        <circle cx="92" cy="38" r="3.5" fill="#FF1493"/>
-                        <circle cx="110" cy="26" r="4.5" fill="#00FFFF"/>
-                        <circle cx="128" cy="38" r="3.5" fill="#FF1493"/>
-                        <rect x="84" y="65" width="52" height="6" rx="2" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
-
-                        <g transform="translate(115, 175)">
-                            <ellipse cx="30" cy="30" rx="22" ry="18" fill="#FFFFFF" stroke="#FFB6C1" stroke-width="1.5"/>
-                            <path class="cat-tail-anim" d="M48 35C58 30 65 20 62 10C60 5 55 8 57 15C58 22 50 28 45 30" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
-                            <circle cx="18" cy="18" r="15" fill="#FFFFFF" stroke="#FFB6C1" stroke-width="1.5"/>
-                            <polygon points="8,10 12,0 18,8" fill="#FFB6C1"/>
-                            <polygon points="20,8 26,0 28,10" fill="#FFB6C1"/>
-                            <ellipse cx="13" cy="16" rx="2.5" ry="3.5" fill="#1E90FF"/>
-                            <ellipse cx="23" cy="16" rx="2.5" ry="3.5" fill="#1E90FF"/>
-                            <polygon points="18,20 16,22 20,22" fill="#FF69B4"/>
-                            <path d="M10 26C15 29 22 29 26 26" stroke="#FF1493" stroke-width="3"/>
-                            <circle cx="18" cy="28" r="3" fill="#FFD700"/>
-                        </g>
-
-                        <defs>
-                            <linearGradient id="skirtGrad" x1="110" y1="130" x2="110" y2="260" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#FF1493"/>
-                                <stop offset="0.6" stop-color="#FF69B4"/>
-                                <stop offset="1" stop-color="#C71585"/>
-                            </linearGradient>
-                            <linearGradient id="crownGoldGrad" x1="110" y1="26" x2="110" y2="66" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#FFE066"/>
-                                <stop offset="0.5" stop-color="#FFD700"/>
-                                <stop offset="1" stop-color="#DAA520"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <span class="mt-1 px-3 py-0.5 rounded-full bg-pink-900/90 text-amber-300 border border-amber-300 text-[10px] font-black tracking-widest uppercase shadow">
-                    Princesa Annaliese & Serafina 👑
-                </span>
-            </div>
-
-            <!-- BALÃO DE FALA DA BARBIE (SAUDAÇÃO AO DONO DO PC) -->
-            <div class="flex-grow z-10 w-full">
-                <div class="relative bg-gradient-to-r from-pink-950/90 via-purple-950/90 to-pink-900/90 border-2 border-amber-300/90 rounded-3xl p-5 sm:p-7 shadow-[0_10px_30px_rgba(255,20,147,0.5)] speech-bubble-anim">
-                    
-                    <div class="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 w-0 h-0 border-y-8 border-y-transparent border-r-[16px] border-r-amber-300"></div>
-
-                    <div class="flex items-center justify-between gap-3 mb-2 flex-wrap">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xl">✨👑</span>
-                            <span class="text-xs font-black text-amber-300 uppercase tracking-widest font-mono">Mensagem da Princesa Barbie</span>
-                        </div>
-                        
-                        <button onclick="falarSaudacaoBarbie()" class="bg-gradient-to-r from-pink-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-pink-950 px-3 py-1 rounded-full text-xs font-black transition-all flex items-center space-x-1 shadow-md hover:scale-105 active:scale-95">
-                            <i class="fa-solid fa-volume-high"></i>
-                            <span>Ouvir Voz</span>
-                        </button>
-                    </div>
-
-                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-wide barbie-font-title leading-tight">
-                        Seja bem-vindo, <span id="displayOwnerName" class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-pink-300 to-amber-300 drop-shadow-[0_2px_10px_rgba(255,215,0,0.8)] underline decoration-pink-500 underline-offset-4">Alexandre</span>! ✨💖
-                    </h2>
-
-                    <p class="mt-2 text-pink-100 text-xs sm:text-sm leading-relaxed font-medium">
-                        "É uma honra receber você no meu reino de monitoramento! O sistema **IgnisGuard** está a postos para proteger todas as fazendas com muito brilho, segurança e alta tecnologia!" 🏰🌸
-                    </p>
-
-                    <div class="mt-4 pt-3 border-t border-pink-500/40 flex items-center justify-between flex-wrap gap-2 text-xs">
-                        <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-laptop-code text-pink-300"></i>
-                            <span class="text-pink-200 font-bold">Dono do PC:</span>
-                            <input type="text" id="inputPcOwner" value="Alexandre" placeholder="Digite seu nome..." class="bg-pink-950/80 border border-pink-400/80 rounded-xl px-3 py-1 text-xs text-white placeholder-pink-400 focus:outline-none focus:border-amber-300 w-36 sm:w-48 font-bold">
-                            <button onclick="salvarDonoPC()" class="bg-pink-600 hover:bg-amber-400 hover:text-pink-950 text-white font-black px-3 py-1 rounded-xl transition border border-pink-300 shadow">
-                                <i class="fa-solid fa-check mr-1"></i> Salvar
-                            </button>
-                        </div>
-                        <span class="text-[11px] text-amber-200/80 italic font-semibold">✨ Estilo A Princesa e a Plebeia</span>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- PÁGINA 1: SELEÇÃO DE LOCAL BARBIE -->
-    <main id="page1" class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex flex-col justify-center">
-        <div class="text-center mb-10">
-            <h1 id="txtHomeTitle" class="text-3xl sm:text-4xl md:text-5xl font-black text-pink-100 tracking-tight barbie-font-title drop-shadow-[0_4px_12px_rgba(255,20,147,0.8)]">
-                Qual reino você quer avaliar hoje? 👑
+    <!-- PÁGINA 1: SELEÇÃO DE LOCAL -->
+    <main id="page1" class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex flex-col justify-center">
+        <div class="text-center mb-12">
+            <h1 id="txtHomeTitle" class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+                Qual local você quer avaliar?
             </h1>
-            <p id="txtHomeSubtitle" class="mt-3 text-pink-200 text-sm sm:text-base max-w-xl mx-auto font-semibold">
-                Selecione uma das estações rurais abaixo para acessar a telemetria em tempo real com todo o glamour!
+            <p id="txtHomeSubtitle" class="mt-3 text-stone-400 text-sm sm:text-base max-w-xl mx-auto">
+                Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real.
             </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full">
             <!-- Santa Rita do Sapucaí -->
-            <div onclick="selectCity('santa_rita')" class="group relative barbie-glass-box rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(255,20,147,0.6)] cursor-pointer flex flex-col justify-between border-2 border-pink-400/60">
+            <div onclick="selectCity('santa_rita')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span id="badge-santa_rita" class="inline-flex items-center space-x-1.5 px-3.5 py-1 bg-pink-950/80 text-pink-300 border border-pink-500 rounded-full text-xs font-black shadow-inner">
-                            <span id="badge-dot-santa_rita" class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+                        <span id="badge-santa_rita" class="inline-flex items-center space-x-1.5 px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 rounded-full text-xs font-bold transition-colors">
+                            <span id="badge-dot-santa_rita" class="w-2 h-2 rounded-full bg-stone-500"></span>
                             <span id="badge-text-santa_rita">Aguardando...</span>
                         </span>
-                        <span class="text-2xl group-hover:scale-125 transition-transform">🌾✨</span>
+                        <i class="fa-solid fa-wheat-awn text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
-                    <h2 class="text-2xl font-black text-white group-hover:text-amber-300 transition-colors barbie-font-title">Santa Rita do Sapucaí</h2>
-                    <p id="txtDescSanta" class="text-pink-200 text-xs mt-1 font-medium">Sul de Minas Gerais • Vale da Eletrônica Glamourosa</p>
+                    <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Santa Rita do Sapucaí</h2>
+                    <p id="txtDescSanta" class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Vale da Eletrônica</p>
                 </div>
-                <div class="mt-8 pt-4 border-t border-pink-500/40 flex items-center justify-between text-xs font-black text-pink-200 group-hover:text-amber-300">
+                <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
                     <span class="txt-access-monitor">Acessar Monitoramento</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform text-amber-300"></i>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
 
             <!-- Cachoeira de Minas -->
-            <div onclick="selectCity('cachoeira')" class="group relative barbie-glass-box rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(255,20,147,0.6)] cursor-pointer flex flex-col justify-between border-2 border-pink-400/60">
+            <div onclick="selectCity('cachoeira')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span id="badge-cachoeira" class="inline-flex items-center space-x-1.5 px-3.5 py-1 bg-pink-950/80 text-pink-300 border border-pink-500 rounded-full text-xs font-black shadow-inner">
-                            <span id="badge-dot-cachoeira" class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+                        <span id="badge-cachoeira" class="inline-flex items-center space-x-1.5 px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 rounded-full text-xs font-bold transition-colors">
+                            <span id="badge-dot-cachoeira" class="w-2 h-2 rounded-full bg-stone-500"></span>
                             <span id="badge-text-cachoeira">Aguardando...</span>
                         </span>
-                        <span class="text-2xl group-hover:scale-125 transition-transform">🏔️💖</span>
+                        <i class="fa-solid fa-mountain text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
-                    <h2 class="text-2xl font-black text-white group-hover:text-amber-300 transition-colors barbie-font-title">Cachoeira de Minas</h2>
-                    <p id="txtDescCachoeira" class="text-pink-200 text-xs mt-1 font-medium">Sul de Minas Gerais • Zonas Agrícolas Reais</p>
+                    <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Cachoeira de Minas</h2>
+                    <p id="txtDescCachoeira" class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Zonas Agrícolas</p>
                 </div>
-                <div class="mt-8 pt-4 border-t border-pink-500/40 flex items-center justify-between text-xs font-black text-pink-200 group-hover:text-amber-300">
+                <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
                     <span class="txt-access-monitor">Acessar Monitoramento</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform text-amber-300"></i>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
 
             <!-- Conceição dos Ouros -->
-            <div onclick="selectCity('conceicao')" class="group relative barbie-glass-box rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_35px_rgba(255,20,147,0.6)] cursor-pointer flex flex-col justify-between border-2 border-pink-400/60">
+            <div onclick="selectCity('conceicao')" class="group relative bg-gradient-to-b from-stone-900 to-stone-950 border border-stone-800 hover:border-orange-500/80 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl cursor-pointer flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <span id="badge-conceicao" class="inline-flex items-center space-x-1.5 px-3.5 py-1 bg-pink-950/80 text-pink-300 border border-pink-500 rounded-full text-xs font-black shadow-inner">
-                            <span id="badge-dot-conceicao" class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+                        <span id="badge-conceicao" class="inline-flex items-center space-x-1.5 px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 rounded-full text-xs font-bold transition-colors">
+                            <span id="badge-dot-conceicao" class="w-2 h-2 rounded-full bg-stone-500"></span>
                             <span id="badge-text-conceicao">Aguardando...</span>
                         </span>
-                        <span class="text-2xl group-hover:scale-125 transition-transform">🌲👑</span>
+                        <i class="fa-solid fa-tree text-stone-700 group-hover:text-amber-500 transition-colors"></i>
                     </div>
-                    <h2 class="text-2xl font-black text-white group-hover:text-amber-300 transition-colors barbie-font-title">Conceição dos Ouros</h2>
-                    <p id="txtDescConceicao" class="text-pink-200 text-xs mt-1 font-medium">Sul de Minas Gerais • Floresta Encantada</p>
+                    <h2 class="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">Conceição dos Ouros</h2>
+                    <p id="txtDescConceicao" class="text-stone-400 text-xs mt-1">Sul de Minas Gerais • Região Florestal</p>
                 </div>
-                <div class="mt-8 pt-4 border-t border-pink-500/40 flex items-center justify-between text-xs font-black text-pink-200 group-hover:text-amber-300">
+                <div class="mt-8 pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-semibold text-stone-400 group-hover:text-orange-300">
                     <span class="txt-access-monitor">Acessar Monitoramento</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform text-amber-300"></i>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- PÁGINA 2: DASHBOARD DE MONITORAMENTO E MAPA BARBIE -->
-    <main id="page2" class="hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+    <!-- PÁGINA 2: DASHBOARD DE MONITORAMENTO E MAPA -->
+    <main id="page2" class="hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
         <!-- CARD DE TELEMETRIA -->
-        <div id="telemetryCard" class="barbie-glass-box rounded-3xl mb-6 transition-all duration-300 shadow-2xl overflow-hidden border-2 border-pink-400">
+        <div id="telemetryCard" class="bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden">
             
             <!-- ====== ESTADO ATIVO (Online) ====== -->
-            <div id="viewActive" class="p-5 sm:p-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div id="viewActive" class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div class="flex flex-col">
-                    <div class="flex items-center space-x-2 text-amber-300 text-xs font-black uppercase tracking-wider mb-1">
+                    <div class="flex items-center space-x-2 text-orange-400 text-xs font-bold uppercase tracking-wider mb-1">
                         <i class="fa-solid fa-tower-cell animate-pulse"></i>
-                        <span id="txtConnectedFirebase">Estação Conectada ao Firebase Real</span>
+                        <span id="txtConnectedFirebase">Estação Conectada ao Firebase</span>
                     </div>
                     
                     <!-- Apelido e Nome da Cidade -->
                     <div class="flex items-baseline space-x-2 flex-wrap">
-                        <h2 id="displayTotemNickname" class="text-3xl sm:text-4xl font-black text-white barbie-font-title drop-shadow-[0_2px_8px_rgba(255,20,147,0.8)]">---</h2>
-                        <span id="displayCitySub" class="text-sm font-bold text-pink-200">---</span>
+                        <h2 id="displayTotemNickname" class="text-2xl sm:text-3xl font-extrabold text-white">---</h2>
+                        <span id="displayCitySub" class="text-sm font-semibold text-stone-400">---</span>
                     </div>
 
                     <!-- Configurar Apelido Personalizado -->
-                    <div class="mt-3 flex items-center space-x-2 flex-wrap gap-2">
-                        <input type="text" id="inputNickname" placeholder="Ex: Fazenda Boa Vista Glamour" class="bg-pink-950/90 border-2 border-pink-400/80 rounded-2xl px-3.5 py-1.5 text-xs text-white placeholder-pink-400 focus:outline-none focus:border-amber-300 w-52 sm:w-64 font-bold">
-                        <button onclick="salvarApelido()" class="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white px-3.5 py-1.5 rounded-2xl text-xs font-black transition border border-pink-300 shadow-md">
-                            <i class="fa-solid fa-pen mr-1 text-amber-300"></i> <span id="txtBtnSaveNickname">Salvar Apelido</span>
+                    <div class="mt-2.5 flex items-center space-x-2 flex-wrap gap-2">
+                        <input type="text" id="inputNickname" placeholder="Ex: Fazenda Boa Vista" class="bg-stone-950 border border-stone-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-orange-500 w-52 sm:w-60">
+                        <button onclick="salvarApelido()" class="bg-stone-800 hover:bg-orange-600 text-stone-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition border border-stone-700">
+                            <i class="fa-solid fa-pen mr-1 text-orange-400"></i> <span id="txtBtnSaveNickname">Salvar Apelido</span>
                         </button>
-                        <button onclick="resetarApelido()" class="bg-pink-900/80 hover:bg-pink-800 text-pink-200 px-3 py-1.5 rounded-2xl text-xs font-bold transition border border-pink-500">
-                            <i class="fa-solid fa-rotate-left mr-1 text-pink-300"></i> <span id="txtBtnResetNickname">Restaurar</span>
+                        <button onclick="resetarApelido()" class="bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-stone-700">
+                            <i class="fa-solid fa-rotate-left mr-1 text-stone-400"></i> <span id="txtBtnResetNickname">Restaurar</span>
                         </button>
                     </div>
 
-                    <p id="displayCoords" class="text-pink-200 text-xs sm:text-sm mt-2.5 font-mono font-bold">Coordenadas: --, --</p>
+                    <p id="displayCoords" class="text-stone-400 text-xs sm:text-sm mt-2 font-mono">Coordenadas: --, --</p>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 w-full lg:w-auto">
                     <!-- Fumaça/Gás -->
-                    <div class="bg-pink-950/80 border-2 border-pink-500/60 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <div class="flex items-center justify-between text-pink-200 text-xs font-extrabold mb-2">
+                    <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
                             <span id="txtLabelSmoke">Gás / Fumaça</span>
-                            <span class="text-base">💨✨</span>
+                            <i class="fa-solid fa-smog text-orange-400"></i>
                         </div>
                         <div class="flex items-baseline space-x-1">
-                            <span id="valSmoke" class="text-2xl font-black text-white barbie-font-title">--</span>
-                            <span class="text-xs font-bold text-pink-300">ppm</span>
+                            <span id="valSmoke" class="text-2xl font-extrabold text-white">--</span>
+                            <span class="text-xs font-semibold text-stone-400">ppm</span>
                         </div>
                     </div>
 
                     <!-- Temperatura -->
-                    <div class="bg-pink-950/80 border-2 border-pink-500/60 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <div class="flex items-center justify-between text-pink-200 text-xs font-extrabold mb-2">
+                    <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
                             <span id="txtLabelTemp">Temperatura</span>
-                            <span class="text-base">🌡️💖</span>
+                            <i class="fa-solid fa-temperature-high text-amber-500"></i>
                         </div>
                         <div class="flex items-baseline space-x-1">
-                            <span id="valTemp" class="text-2xl font-black text-white barbie-font-title">--</span>
-                            <span class="text-xs font-bold text-pink-300">°C</span>
+                            <span id="valTemp" class="text-2xl font-extrabold text-white">--</span>
+                            <span class="text-xs font-semibold text-stone-400">°C</span>
                         </div>
                     </div>
 
                     <!-- Sinal LoRa -->
-                    <div class="bg-pink-950/80 border-2 border-pink-500/60 rounded-2xl p-4 flex flex-col justify-between shadow-inner">
-                        <div class="flex items-center justify-between text-pink-200 text-xs font-extrabold mb-2">
+                    <div class="bg-stone-950/80 border border-stone-800/80 rounded-xl p-3.5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-stone-400 text-xs font-semibold mb-2">
                             <span id="txtLabelLora">Sinal LoRa</span>
-                            <span class="text-base">📡👑</span>
+                            <i class="fa-solid fa-wifi text-emerald-400"></i>
                         </div>
                         <div class="flex items-baseline space-x-1">
-                            <span id="valLora" class="text-2xl font-black text-white barbie-font-title">--</span>
-                            <span class="text-xs font-bold text-pink-300">dBm</span>
+                            <span id="valLora" class="text-2xl font-extrabold text-white">--</span>
+                            <span class="text-xs font-semibold text-stone-400">dBm</span>
                         </div>
                     </div>
 
                     <!-- Status -->
-                    <div id="statusContainer" class="bg-emerald-950/70 border-2 border-emerald-400/80 rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 shadow-inner">
-                        <div class="text-emerald-300 text-xs font-black mb-2 flex items-center justify-between">
+                    <div id="statusContainer" class="bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300">
+                        <div class="text-emerald-400 text-xs font-semibold mb-2 flex items-center justify-between">
                             <span id="txtLabelStatus">Status</span>
-                            <span id="statusDot" class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         </div>
                         <div>
-                            <span id="valStatus" class="text-base sm:text-lg font-black text-emerald-300 tracking-wider uppercase block">NORMAL</span>
+                            <span id="valStatus" class="text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block">NORMAL</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ====== ESTADO INATIVO ====== -->
+            <!-- ====== ESTADO INATIVO (Caso queira usar offline no futuro) ====== -->
             <div id="viewOffline" class="hidden p-8 sm:p-12 flex-col items-center justify-center text-center">
-                <div class="w-20 h-20 rounded-full bg-pink-900/60 flex items-center justify-center mb-4 border-2 border-pink-400/80 shadow-lg">
-                    <i class="fa-solid fa-link-slash text-pink-300 text-3xl"></i>
+                <div class="w-16 h-16 rounded-full bg-red-900/30 flex items-center justify-center mb-4 border border-red-500/30">
+                    <i class="fa-solid fa-link-slash text-red-500 text-2xl"></i>
                 </div>
-                <h2 id="displayCityNameOffline" class="text-3xl sm:text-4xl font-black text-white mb-3 barbie-font-title">---</h2>
-                <div class="inline-flex items-center space-x-2 bg-pink-950 border-2 border-pink-500 px-5 py-2 rounded-full shadow-lg">
-                    <span class="w-3 h-3 rounded-full bg-pink-500 animate-ping"></span>
-                    <span id="txtOfflineStatus" class="text-pink-300 font-black tracking-widest uppercase text-sm">SEM SINAL</span>
+                <h2 id="displayCityNameOffline" class="text-3xl sm:text-4xl font-extrabold text-white mb-3">---</h2>
+                <div class="inline-flex items-center space-x-2 bg-red-950 border border-red-600 px-4 py-2 rounded-full shadow-inner">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span id="txtOfflineStatus" class="text-red-400 font-black tracking-widest uppercase text-sm">SEM SINAL</span>
                 </div>
-                <p id="txtOfflineDesc" class="text-pink-200 text-sm mt-5 max-w-md mx-auto font-medium">
+                <p id="txtOfflineDesc" class="text-red-300/80 text-sm mt-5 max-w-md mx-auto">
                     A estação de telemetria não está enviando dados no momento. Verifique a energia, conectividade ou o sinal da central no local.
                 </p>
             </div>
         </div>
 
-        <!-- SEÇÃO DO MAPA BARBIE -->
-        <div class="relative rounded-3xl overflow-hidden border-2 border-pink-400/80 shadow-2xl mb-6 bg-pink-950">
+        <!-- SEÇÃO DO MAPA -->
+        <div class="relative rounded-2xl overflow-hidden border border-stone-800 shadow-2xl mb-6 bg-stone-900">
             <div id="mapContainer" class="w-full h-[450px] sm:h-[520px] z-10"></div>
         </div>
 
         <!-- BARRA INFERIOR -->
-        <div class="barbie-glass-box rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 border-2 border-pink-400/60">
+        <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
-                <span id="txtCitiesLabel" class="text-xs font-black text-amber-300 uppercase tracking-wider whitespace-nowrap mr-2">Cidades:</span>
-                <button onclick="selectCity('santa_rita')" id="btnQuickSantaRita" class="px-4 py-2 rounded-xl text-xs font-black bg-pink-900 text-pink-200 whitespace-nowrap transition border border-pink-500">Santa Rita do Sapucaí</button>
-                <button onclick="selectCity('cachoeira')" id="btnQuickCachoeira" class="px-4 py-2 rounded-xl text-xs font-black bg-pink-900 text-pink-200 whitespace-nowrap transition border border-pink-500">Cachoeira de Minas</button>
-                <button onclick="selectCity('conceicao')" id="btnQuickConceicao" class="px-4 py-2 rounded-xl text-xs font-black bg-pink-900 text-pink-200 whitespace-nowrap transition border border-pink-500">Conceição dos Ouros</button>
+                <span id="txtCitiesLabel" class="text-xs font-extrabold text-stone-400 uppercase tracking-wider whitespace-nowrap mr-2">Cidades:</span>
+                <button onclick="selectCity('santa_rita')" id="btnQuickSantaRita" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">Santa Rita do Sapucaí</button>
+                <button onclick="selectCity('cachoeira')" id="btnQuickCachoeira" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">Cachoeira de Minas</button>
+                <button onclick="selectCity('conceicao')" id="btnQuickConceicao" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 whitespace-nowrap transition border border-stone-700">Conceição dos Ouros</button>
             </div>
         </div>
     </main>
 
-    <!-- FOOTER BARBIE -->
-    <footer class="border-t-2 border-pink-500/60 bg-pink-950/90 py-6 text-center text-xs text-pink-300 font-bold">
+    <!-- FOOTER -->
+    <footer class="border-t border-stone-900 bg-stone-950 py-6 text-center text-xs text-stone-500">
         <div class="max-w-7xl mx-auto px-4">
-            <p id="txtFooter">© 2026 IgnisGuard — Barbie Dreamland & Royal Castle Edition 👑💖. Todos os direitos reservados.</p>
+            <p id="txtFooter">© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.</p>
         </div>
     </footer>
 
@@ -583,65 +376,65 @@
             }
         };
 
-        // Dicionário de Traduções Barbie Style
+        // Dicionário de Traduções
         const translations = {
             pt: {
-                headerSubtitle: "✨ Totem Barbie de Prevenção de Incêndios ✨",
+                headerSubtitle: "Totem de Prevenção de Incêndios",
                 btnChangeLocation: "Mudar de Local",
-                homeTitle: "Qual reino você quer avaliar hoje? 👑",
-                homeSubtitle: "Selecione uma das estações rurais abaixo para acessar a telemetria em tempo real com todo o glamour!",
+                homeTitle: "Qual local você quer avaliar?",
+                homeSubtitle: "Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real.",
                 badgeWaiting: "Aguardando...",
-                badgeActive: "Sinal Ativo 👑",
-                badgeInactive: "Sem Sinal 💔",
+                badgeActive: "Sinal Ativo",
+                badgeInactive: "Sem Sinal",
                 accessMonitor: "Acessar Monitoramento",
-                descSanta: "Sul de Minas Gerais • Vale da Eletrônica Glamourosa",
-                descCachoeira: "Sul de Minas Gerais • Zonas Agrícolas Reais",
-                descConceicao: "Sul de Minas Gerais • Floresta Encantada",
-                connectedFirebase: "Estação Conectada ao Firebase Real",
-                coordsPrefix: "Coordenadas Reais",
+                descSanta: "Sul de Minas Gerais • Vale da Eletrônica",
+                descCachoeira: "Sul de Minas Gerais • Zonas Agrícolas",
+                descConceicao: "Sul de Minas Gerais • Região Florestal",
+                connectedFirebase: "Estação Conectada ao Firebase",
+                coordsPrefix: "Coordenadas",
                 labelSmoke: "Gás / Fumaça",
                 labelTemp: "Temperatura",
                 labelLora: "Sinal LoRa",
                 labelStatus: "Status",
-                statusNormal: "NORMAL ✨",
-                statusAlert: "INCÊNDIO DETECTADO! 🚨💖",
+                statusNormal: "NORMAL",
+                statusAlert: "INCÊNDIO DETECTADO!",
                 statusWaiting: "AGUARDANDO DADOS",
-                statusNoSignal: "SEM SINAL 💔",
+                statusNoSignal: "SEM SINAL",
                 offlineDesc: "A estação de telemetria não está enviando dados no momento. Verifique a energia, conectividade ou o sinal da central no local.",
-                citiesLabel: "Cidades Reais:",
-                footerText: "© 2026 IgnisGuard — Barbie Dreamland & Royal Castle Edition 👑💖.",
+                citiesLabel: "Cidades:",
+                footerText: "© 2026 IgnisGuard — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.",
                 saveNickname: "Salvar Apelido",
                 resetNickname: "Restaurar",
-                placeholderNickname: "Ex: Fazenda Boa Vista Glamour"
+                placeholderNickname: "Ex: Fazenda Boa Vista"
             },
             en: {
-                headerSubtitle: "✨ Barbie Fire Prevention Totem ✨",
+                headerSubtitle: "Fire Prevention Totem",
                 btnChangeLocation: "Change Location",
-                homeTitle: "Which realm do you want to evaluate today? 👑",
-                homeSubtitle: "Select one of the rural stations below to access real-time telemetry with full glamour!",
+                homeTitle: "Which location do you want to evaluate?",
+                homeSubtitle: "Select one of the rural zones below to access the real-time telemetry station.",
                 badgeWaiting: "Waiting...",
-                badgeActive: "Active Signal 👑",
-                badgeInactive: "No Signal 💔",
+                badgeActive: "Active Signal",
+                badgeInactive: "No Signal",
                 accessMonitor: "Access Monitoring",
-                descSanta: "Southern Minas Gerais • Glamorous Electronics Valley",
-                descCachoeira: "Southern Minas Gerais • Royal Agricultural Zones",
-                descConceicao: "Southern Minas Gerais • Enchanted Forest",
-                connectedFirebase: "Station Connected to Real Firebase",
-                coordsPrefix: "Royal Coordinates",
+                descSanta: "Southern Minas Gerais • Electronics Valley",
+                descCachoeira: "Southern Minas Gerais • Agricultural Zones",
+                descConceicao: "Southern Minas Gerais • Forest Region",
+                connectedFirebase: "Station Connected to Firebase",
+                coordsPrefix: "Coordinates",
                 labelSmoke: "Gas / Smoke",
                 labelTemp: "Temperature",
                 labelLora: "LoRa Signal",
                 labelStatus: "Status",
-                statusNormal: "NORMAL ✨",
-                statusAlert: "FIRE DETECTED! 🚨💖",
+                statusNormal: "NORMAL",
+                statusAlert: "FIRE DETECTED!",
                 statusWaiting: "WAITING FOR DATA",
-                statusNoSignal: "NO SIGNAL 💔",
-                offlineDesc: "The telemetry station is not sending data at the moment. Check power, connectivity, or central signal on site.",
-                citiesLabel: "Royal Cities:",
-                footerText: "© 2026 IgnisGuard — Barbie Dreamland & Royal Castle Edition 👑💖.",
+                statusNoSignal: "NO SIGNAL",
+                offlineDesc: "The telemetry station is not sending data at the moment. Check the power, connectivity, or central signal on site.",
+                citiesLabel: "Cities:",
+                footerText: "© 2026 IgnisGuard — Fire Prevention and Telemetry Totem for Farms.",
                 saveNickname: "Save Nickname",
                 resetNickname: "Reset",
-                placeholderNickname: "Ex: Boa Vista Glamour Farm"
+                placeholderNickname: "Ex: Boa Vista Farm"
             }
         };
 
@@ -670,45 +463,17 @@
         const displayCityNameOffline = document.getElementById('displayCityNameOffline');
         const displayCoords = document.getElementById('displayCoords');
         const inputNickname = document.getElementById('inputNickname');
-        const displayOwnerName = document.getElementById('displayOwnerName');
-        const inputPcOwner = document.getElementById('inputPcOwner');
-
-        // Inicialização do nome do Dono do PC
-        function carregarDonoPC() {
-            const savedOwner = localStorage.getItem('ignisguard_pc_owner') || 'Alexandre';
-            displayOwnerName.innerText = savedOwner;
-            inputPcOwner.value = savedOwner;
-        }
-
-        function salvarDonoPC() {
-            const novoDono = inputPcOwner.value.trim() || 'Alexandre';
-            localStorage.setItem('ignisguard_pc_owner', novoDono);
-            displayOwnerName.innerText = novoDono;
-            
-            // Fala a saudação com o novo nome
-            falarSaudacaoBarbie();
-        }
-
-        function falarSaudacaoBarbie() {
-            const nomeDono = displayOwnerName.innerText;
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Para fala anterior se houver
-                const texto = `Seja bem-vindo, ${nomeDono}! Eu sou a Princesa Barbie e estou aqui para proteger seu reino de incêndios com muito glamour!`;
-                const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.lang = 'pt-BR';
-                utterance.pitch = 1.4; // Tom mais agudo e encantador
-                utterance.rate = 1.0;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
 
         // ==========================================
-        // DESCONECTA/RECONECTA FIREBASE
+        // APENAS DESCONECTA DO FIREBASE (LIBERA VAGA)
+        // SEM MEXER NO STATUS OU NA INTERFACE
         // ==========================================
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
+                // Aba minimizada/oculta: fecha a conexão com o Firebase para liberar a vaga
                 firebase.database().goOffline();
             } else {
+                // Aba em foco novamente: restabelece a conexão
                 firebase.database().goOnline();
             }
         });
@@ -718,11 +483,11 @@
             const t = translations[lang];
 
             if (lang === 'pt') {
-                document.getElementById('btnLangPt').className = "px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md transition";
-                document.getElementById('btnLangEn').className = "px-3 py-1 rounded-xl text-xs font-bold text-pink-200 hover:text-white transition";
+                document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition";
+                document.getElementById('btnLangEn').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
             } else {
-                document.getElementById('btnLangEn').className = "px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md transition";
-                document.getElementById('btnLangPt').className = "px-3 py-1 rounded-xl text-xs font-bold text-pink-200 hover:text-white transition";
+                document.getElementById('btnLangEn').className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition";
+                document.getElementById('btnLangPt').className = "px-2.5 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white transition";
             }
 
             document.getElementById('txtHeaderSubtitle').innerText = t.headerSubtitle;
@@ -754,7 +519,7 @@
 
             if (totemMarker) {
                 const defaultCity = citiesData[currentCityKey];
-                totemMarker.setPopupContent(`<b>Totem Barbie IgnisGuard 👑</b><br>${defaultCity.name}`);
+                totemMarker.setPopupContent(`<b>Totem IgnisGuard</b><br>${defaultCity.name}`);
             }
 
             atualizarBadgesHome();
@@ -767,9 +532,9 @@
             }, (error) => {
                 if (!error) {
                     const btn = event.currentTarget;
-                    btn.innerHTML = '<i class="fa-solid fa-check text-amber-300 mr-1"></i> Salvo!';
+                    btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Salvo!';
                     setTimeout(() => {
-                        btn.innerHTML = `<i class="fa-solid fa-pen mr-1 text-amber-300"></i> <span id="txtBtnSaveNickname">${translations[currentLang].saveNickname}</span>`;
+                        btn.innerHTML = `<i class="fa-solid fa-pen mr-1 text-orange-400"></i> <span id="txtBtnSaveNickname">${translations[currentLang].saveNickname}</span>`;
                     }, 2000);
                 }
             });
@@ -782,31 +547,37 @@
                 if (!error) {
                     inputNickname.value = '';
                     const btn = event.currentTarget;
-                    btn.innerHTML = '<i class="fa-solid fa-check text-amber-300 mr-1"></i> Restaurado!';
+                    btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Restaurado!';
                     setTimeout(() => {
-                        btn.innerHTML = `<i class="fa-solid fa-rotate-left mr-1 text-pink-300"></i> <span id="txtBtnResetNickname">${translations[currentLang].resetNickname}</span>`;
+                        btn.innerHTML = `<i class="fa-solid fa-rotate-left mr-1 text-stone-400"></i> <span id="txtBtnResetNickname">${translations[currentLang].resetNickname}</span>`;
                     }, 2000);
                 }
             });
         }
 
         function createTotemIcon(isAlarm = false) {
-            const primaryColor = isAlarm ? "#FF0055" : "#FF1493";
-            const crownColor = isAlarm ? "#FFD700" : "#FFE066";
+            const primaryColor = isAlarm ? "#EF4444" : "#FF6D00";
+            const flameGrad1 = isAlarm ? "#F87171" : "#FFD54F";
+            const flameGrad2 = isAlarm ? "#DC2626" : "#DD2C00";
 
             const svgHtml = `
                 <div class="totem-marker-pin">
-                    <svg viewBox="0 0 60 80" width="52" height="66" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M30 0C13.4315 0 0 13.4315 0 30C0 48 30 80 30 80C30 80 60 48 60 30C60 13.4315 46.5685 0 30 0Z" fill="${isAlarm ? '#800020' : '#4A0028'}" stroke="${primaryColor}" stroke-width="4"/>
-                        <path class="crown-animated" d="M18 35L23 18L30 26L37 18L42 35H18Z" fill="${crownColor}" stroke="#FFF" stroke-width="1.5"/>
-                        <circle cx="23" cy="18" r="2.5" fill="#FF1493"/>
-                        <circle cx="30" cy="26" r="3" fill="#FFF"/>
-                        <circle cx="37" cy="18" r="2.5" fill="#FF1493"/>
-                        <rect x="19" y="34" width="22" height="4" rx="1" fill="#FF1493"/>
+                    <svg viewBox="0 0 60 80" width="44" height="56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M30 0C13.4315 0 0 13.4315 0 30C0 48 30 80 30 80C30 80 60 48 60 30C60 13.4315 46.5685 0 30 0Z" fill="${isAlarm ? '#450A0A' : '#1C1917'}" stroke="${primaryColor}" stroke-width="3"/>
+                        <path class="flame-animated" d="M18 42C18 42 16 32 24 22C26 28 32 26 34 14 C40 22 48 28 48 38C48 46 40 52 30 52C20 52 18 45 18 42Z" fill="url(#pinFlameGrad)"/>
+                        <rect x="25" y="18" width="10" height="22" rx="1" fill="#5D4037" stroke="#3E2723" stroke-width="1"/>
+                        <circle cx="30" cy="23" r="1" fill="#FFB300"/>
+                        <circle cx="30" cy="28" r="1" fill="#FFB300"/>
+                        <defs>
+                            <linearGradient id="pinFlameGrad" x1="30" y1="14" x2="30" y2="52" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="${flameGrad1}"/>
+                                <stop offset="1" stop-color="${flameGrad2}"/>
+                            </linearGradient>
+                        </defs>
                     </svg>
                 </div>
             `;
-            return L.divIcon({ html: svgHtml, className: '', iconSize: [52, 66], iconAnchor: [26, 66], popupAnchor: [0, -60] });
+            return L.divIcon({ html: svgHtml, className: '', iconSize: [44, 56], iconAnchor: [22, 56], popupAnchor: [0, -50] });
         }
 
         function initMap() {
@@ -820,7 +591,7 @@
             }).addTo(map);
 
             totemMarker = L.marker(defaultCity.cityCoords, { icon: createTotemIcon(false) }).addTo(map);
-            totemMarker.bindPopup(`<b>Totem Barbie IgnisGuard 👑</b><br>${defaultCity.name}`);
+            totemMarker.bindPopup(`<b>Totem IgnisGuard</b><br>${defaultCity.name}`);
         }
 
         function goToPage(pageNum) {
@@ -871,12 +642,12 @@
                 const isAtivo = cData && (cData.ativo === true || cData.ativo === "true" || cData.ativo === 1 || cData.ativo === "1");
                 
                 if (isAtivo) {
-                    badge.className = "inline-flex items-center space-x-1.5 px-3.5 py-1 bg-pink-900/90 text-amber-300 border-2 border-amber-300 rounded-full text-xs font-black shadow-lg";
-                    badgeDot.className = "w-2.5 h-2.5 rounded-full bg-amber-300 animate-pulse";
+                    badge.className = "inline-flex items-center space-x-1.5 px-3 py-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 rounded-full text-xs font-bold transition-colors";
+                    badgeDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
                     badgeText.innerText = t.badgeActive;
                 } else {
-                    badge.className = "inline-flex items-center space-x-1.5 px-3.5 py-1 bg-red-950/90 text-red-300 border border-red-500 rounded-full text-xs font-black shadow-inner";
-                    badgeDot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                    badge.className = "inline-flex items-center space-x-1.5 px-3 py-1 bg-red-600/20 text-red-500 border border-red-500/50 rounded-full text-xs font-bold transition-colors";
+                    badgeDot.className = "w-2 h-2 rounded-full bg-red-500";
                     badgeText.innerText = t.badgeInactive;
                 }
             }
@@ -903,9 +674,9 @@
                     const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
                     
                     if (isAlerta) {
-                        telemetryCard.className = "barbie-glass-box rounded-3xl mb-6 transition-all duration-300 shadow-2xl overflow-hidden border-4 border-red-500 fire-alarm-active";
+                        telemetryCard.className = "bg-stone-900/90 border-2 border-red-600 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden fire-alarm-active";
                     } else {
-                        telemetryCard.className = "barbie-glass-box rounded-3xl mb-6 transition-all duration-300 shadow-2xl overflow-hidden border-2 border-pink-400";
+                        telemetryCard.className = "bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
                     }
 
                     viewOffline.classList.add('hidden');
@@ -927,15 +698,15 @@
                     }
 
                     if (isAlerta) {
-                        statusContainer.className = "bg-red-950/90 border-2 border-red-500 rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 animate-bounce shadow-2xl";
-                        statusDot.className = "w-3 h-3 rounded-full bg-red-500 animate-ping";
-                        valStatus.className = "text-base sm:text-lg font-black text-red-400 tracking-wider uppercase block blink-alarm";
+                        statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
+                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
+                        valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
                         valStatus.innerText = t.statusAlert;
                         if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
                     } else {
-                        statusContainer.className = "bg-emerald-950/70 border-2 border-emerald-400/80 rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 shadow-inner";
-                        statusDot.className = "w-3 h-3 rounded-full bg-emerald-400 animate-pulse";
-                        valStatus.className = "text-base sm:text-lg font-black text-emerald-300 tracking-wider uppercase block";
+                        statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
+                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                        valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
                         valStatus.innerText = t.statusNormal;
                         if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
                     }
@@ -952,15 +723,13 @@
 
             for (let key in btns) {
                 if (key === currentCityKey) {
-                    btns[key].className = "px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-pink-500 to-rose-500 text-white whitespace-nowrap shadow-lg border-2 border-amber-300 transition";
+                    btns[key].className = "px-3.5 py-2 rounded-xl text-xs font-bold bg-orange-600 text-white whitespace-nowrap shadow-lg border border-orange-500 transition";
                 } else {
-                    btns[key].className = "px-4 py-2 rounded-xl text-xs font-black bg-pink-900/80 hover:bg-pink-800 text-pink-200 whitespace-nowrap transition border border-pink-500";
+                    btns[key].className = "px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 hover:bg-stone-700 text-stone-300 whitespace-nowrap transition border border-stone-700";
                 }
             }
         }
 
-        // Inicializa nome do dono e monitoramento
-        carregarDonoPC();
         monitorarTodasAsCidades();
     </script>
 </body>
