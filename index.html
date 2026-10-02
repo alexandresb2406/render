@@ -114,7 +114,7 @@
 <body class="min-h-screen flex flex-col justify-between selection:bg-orange-600 selection:text-white">
 
     <!-- CABEÇALHO DA MARCA -->
-    <header class="border-b border-stone-800/80 bg-stone-950/90 backdrop-blur-md sticky top-0 z-50">
+    <header class="border-b border-stone-800/80 bg-stone-950/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer group" onclick="goToPage(1)">
                 <div class="relative w-11 h-11 flex items-center justify-center bg-stone-900 rounded-xl border border-amber-800/50 group-hover:border-orange-500 transition-colors duration-300">
@@ -145,6 +145,12 @@
             </div>
 
             <div class="flex items-center space-x-3">
+                <!-- BOTÃO DE CRÉDITOS -->
+                <button onclick="toggleCreditsModal(true)" class="flex items-center space-x-2 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-orange-400 px-3.5 py-2 rounded-xl border border-stone-800 hover:border-orange-500/50 transition text-xs sm:text-sm font-bold">
+                    <i class="fa-solid fa-users text-orange-500"></i>
+                    <span id="txtBtnCredits">Créditos</span>
+                </button>
+
                 <!-- SELETOR DE IDIOMA -->
                 <div class="bg-stone-900 border border-stone-800 rounded-xl p-1 flex items-center space-x-1">
                     <button onclick="setLanguage('pt')" id="btnLangPt" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white transition">PT</button>
@@ -314,7 +320,7 @@
                 </div>
             </div>
 
-            <!-- ====== ESTADO INATIVO (Caso queira usar offline no futuro) ====== -->
+            <!-- ====== ESTADO INATIVO ====== -->
             <div id="viewOffline" class="hidden p-8 sm:p-12 flex-col items-center justify-center text-center">
                 <div class="w-16 h-16 rounded-full bg-red-900/30 flex items-center justify-center mb-4 border border-red-500/30">
                     <i class="fa-solid fa-link-slash text-red-500 text-2xl"></i>
@@ -346,6 +352,71 @@
         </div>
     </main>
 
+    <!-- MODAL DE CRÉDITOS DA EQUIPE -->
+    <div id="creditsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-stone-900 border border-stone-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative text-stone-200">
+            <!-- Botão Fechar -->
+            <button onclick="toggleCreditsModal(false)" class="absolute top-4 right-4 text-stone-400 hover:text-white w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Título Modal -->
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-500">
+                    <i class="fa-solid fa-users text-lg"></i>
+                </div>
+                <div>
+                    <h3 id="txtCreditsModalTitle" class="text-xl font-bold text-white">Créditos do Projeto</h3>
+                    <p id="txtCreditsModalSub" class="text-xs text-stone-400">Desenvolvimento e Apresentação</p>
+                </div>
+            </div>
+
+            <!-- LOGOS PROJETE E ETE FMC -->
+            <div class="grid grid-cols-2 gap-4 bg-stone-950 p-4 rounded-xl border border-stone-800/80 mb-6 items-center">
+                <div class="flex items-center justify-center p-2 bg-white/5 rounded-lg border border-stone-800">
+                    <img src="PROJETE.png" alt="PROJETE Logo" class="max-h-12 w-auto object-contain">
+                </div>
+                <div class="flex items-center justify-center p-2 bg-stone-950 rounded-lg border border-stone-800">
+                    <img src="logo_VV_color.jpg" alt="ETE FMC Logo" class="max-h-12 w-auto object-contain rounded">
+                </div>
+            </div>
+
+            <!-- EQUIPE E INTEGRANTES -->
+            <div class="space-y-4">
+                <div>
+                    <span id="txtCreditsTeamLabel" class="text-[11px] font-black text-orange-500 uppercase tracking-widest block mb-1">Equipe</span>
+                    <p class="text-lg font-extrabold text-white">Equipe 2207</p>
+                </div>
+
+                <div>
+                    <span id="txtCreditsMembersLabel" class="text-[11px] font-black text-stone-400 uppercase tracking-widest block mb-2">Integrantes</span>
+                    <ul class="space-y-2 text-sm font-medium">
+                        <li class="flex items-center space-x-2.5 bg-stone-950/60 p-2.5 rounded-lg border border-stone-800/60">
+                            <i class="fa-solid fa-user-gear text-orange-500 text-xs"></i>
+                            <span class="text-stone-200">Alexandre Silveira Barbosa</span>
+                        </li>
+                        <li class="flex items-center space-x-2.5 bg-stone-950/60 p-2.5 rounded-lg border border-stone-800/60">
+                            <i class="fa-solid fa-user-gear text-orange-500 text-xs"></i>
+                            <span class="text-stone-200">Luiz Guilherme Rosário Lorena</span>
+                        </li>
+                        <li class="flex items-center space-x-2.5 bg-stone-950/60 p-2.5 rounded-lg border border-stone-800/60">
+                            <i class="fa-solid fa-user-gear text-orange-500 text-xs"></i>
+                            <span class="text-stone-200">Natã Apolo Rodrigues</span>
+                        </li>
+                        <li class="flex items-center space-x-2.5 bg-stone-950/60 p-2.5 rounded-lg border border-stone-800/60">
+                            <i class="fa-solid fa-user-gear text-orange-500 text-xs"></i>
+                            <span class="text-stone-200">Júlia Vitória dos Santos Batista</span>
+                        </li>
+                        <li class="flex items-center space-x-2.5 bg-stone-950/60 p-2.5 rounded-lg border border-stone-800/60">
+                            <i class="fa-solid fa-user-gear text-orange-500 text-xs"></i>
+                            <span class="text-stone-200">Maria Eduarda Gonçalves Mendes</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="border-t border-stone-900 bg-stone-950 py-6 text-center text-xs text-stone-500">
         <div class="max-w-7xl mx-auto px-4">
@@ -376,10 +447,11 @@
             }
         };
 
-        // Dicionário de Traduções
+        // Dicionário Completo de Traduções (PT / EN)
         const translations = {
             pt: {
                 headerSubtitle: "Totem de Prevenção de Incêndios",
+                btnCredits: "Créditos",
                 btnChangeLocation: "Mudar de Local",
                 homeTitle: "Qual local você quer avaliar?",
                 homeSubtitle: "Selecione uma das zonas rurais abaixo para acessar a estação de telemetria em tempo real.",
@@ -405,10 +477,15 @@
                 footerText: "© 2026 IgnisGuard — Equipe 2207 — Totem de Prevenção e Telemetria Contra Incêndios em Fazendas.",
                 saveNickname: "Salvar Apelido",
                 resetNickname: "Restaurar",
-                placeholderNickname: "Ex: Fazenda Boa Vista"
+                placeholderNickname: "Ex: Fazenda Boa Vista",
+                creditsModalTitle: "Créditos do Projeto",
+                creditsModalSub: "Desenvolvimento e Apresentação",
+                creditsTeamLabel: "Equipe",
+                creditsMembersLabel: "Integrantes"
             },
             en: {
                 headerSubtitle: "Fire Prevention Totem",
+                btnCredits: "Credits",
                 btnChangeLocation: "Change Location",
                 homeTitle: "Which location do you want to evaluate?",
                 homeSubtitle: "Select one of the rural zones below to access the real-time telemetry station.",
@@ -434,7 +511,11 @@
                 footerText: "© 2026 IgnisGuard — Team 2207 — Fire Prevention and Telemetry Totem for Farms.",
                 saveNickname: "Save Nickname",
                 resetNickname: "Reset",
-                placeholderNickname: "Ex: Boa Vista Farm"
+                placeholderNickname: "Ex: Boa Vista Farm",
+                creditsModalTitle: "Project Credits",
+                creditsModalSub: "Development & Presentation",
+                creditsTeamLabel: "Team",
+                creditsMembersLabel: "Team Members"
             }
         };
 
@@ -464,16 +545,21 @@
         const displayCoords = document.getElementById('displayCoords');
         const inputNickname = document.getElementById('inputNickname');
 
-        // ==========================================
-        // APENAS DESCONECTA DO FIREBASE (LIBERA VAGA)
-        // SEM MEXER NO STATUS OU NA INTERFACE
-        // ==========================================
+        // Modal de Créditos
+        function toggleCreditsModal(show) {
+            const modal = document.getElementById('creditsModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Desconecta/Reconecta do Firebase para economizar recursos
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                // Aba minimizada/oculta: fecha a conexão com o Firebase para liberar a vaga
                 firebase.database().goOffline();
             } else {
-                // Aba em foco novamente: restabelece a conexão
                 firebase.database().goOnline();
             }
         });
@@ -491,6 +577,7 @@
             }
 
             document.getElementById('txtHeaderSubtitle').innerText = t.headerSubtitle;
+            document.getElementById('txtBtnCredits').innerText = t.btnCredits;
             document.getElementById('txtBtnChangeLocation').innerText = t.btnChangeLocation;
             document.getElementById('txtHomeTitle').innerText = t.homeTitle;
             document.getElementById('txtHomeSubtitle').innerText = t.homeSubtitle;
@@ -507,6 +594,10 @@
             document.getElementById('txtOfflineDesc').innerText = t.offlineDesc;
             document.getElementById('txtBtnSaveNickname').innerText = t.saveNickname;
             document.getElementById('txtBtnResetNickname').innerText = t.resetNickname;
+            document.getElementById('txtCreditsModalTitle').innerText = t.creditsModalTitle;
+            document.getElementById('txtCreditsModalSub').innerText = t.creditsModalSub;
+            document.getElementById('txtCreditsTeamLabel').innerText = t.creditsTeamLabel;
+            document.getElementById('txtCreditsMembersLabel').innerText = t.creditsMembersLabel;
             inputNickname.placeholder = t.placeholderNickname;
 
             document.querySelectorAll('.txt-access-monitor').forEach(el => el.innerText = t.accessMonitor);
