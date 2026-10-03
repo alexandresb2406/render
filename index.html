@@ -770,50 +770,63 @@
                 
                 if (data) {
                     const apelidoAtual = data.apelido ? data.apelido : cidadeNomeReal;
-                    displayTotemNickname.innerText = apelidoAtual;
-                    displayCitySub.innerText = `(${cidadeNomeReal})`;
-
-                    if (document.activeElement !== inputNickname) {
-                        inputNickname.value = data.apelido || '';
-                    }
-
-                    const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
                     
-                    if (isAlerta) {
-                        telemetryCard.className = "bg-stone-900/90 border-2 border-red-600 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden fire-alarm-active";
+                    const isAlerta = (data.alerta === true || data.alerta === "true" || data.alerta === 1 || data.alerta === "1");
+                    const isAtivo = (data.ativo === true || data.ativo === "true" || data.ativo === 1 || data.ativo === "1");
+                    
+                    if (isAtivo) {
+                        viewOffline.classList.add('hidden');
+                        viewOffline.classList.remove('flex');
+                        viewActive.classList.remove('hidden');
+                        viewActive.classList.add('flex');
+
+                        displayTotemNickname.innerText = apelidoAtual;
+                        displayCitySub.innerText = `(${cidadeNomeReal})`;
+                        if (document.activeElement !== inputNickname) {
+                            inputNickname.value = data.apelido || '';
+                        }
+
+                        if (isAlerta) {
+                            telemetryCard.className = "bg-stone-900/90 border-2 border-red-600 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden fire-alarm-active";
+                        } else {
+                            telemetryCard.className = "bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
+                        }
+
+                        valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
+                        valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
+                        valLora.innerText = data.lora !== undefined ? data.lora : '--';
+
+                        const lat = data.lat || citiesData[cityKey].cityCoords[0];
+                        const lng = data.lng || citiesData[cityKey].cityCoords[1];
+                        displayCoords.innerText = `${t.coordsPrefix}: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+                        if (map) {
+                            map.setView([lat, lng], 14);
+                            totemMarker.setLatLng([lat, lng]);
+                        }
+
+                        if (isAlerta) {
+                            statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
+                            statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
+                            valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
+                            valStatus.innerText = t.statusAlert;
+                            if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
+                        } else {
+                            statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
+                            statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                            valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
+                            valStatus.innerText = t.statusNormal;
+                            if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
+                        }
                     } else {
-                        telemetryCard.className = "bg-stone-900/90 border border-stone-800 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
-                    }
+                        viewActive.classList.add('hidden');
+                        viewActive.classList.remove('flex');
+                        viewOffline.classList.remove('hidden');
+                        viewOffline.classList.add('flex');
 
-                    viewOffline.classList.add('hidden');
-                    viewOffline.classList.remove('flex');
-                    viewActive.classList.remove('hidden');
-                    viewActive.classList.add('flex');
-
-                    valTemp.innerText = data.temperatura !== undefined ? data.temperatura : '--';
-                    valSmoke.innerText = data.gas !== undefined ? data.gas : '--';
-                    valLora.innerText = data.lora !== undefined ? data.lora : '--';
-
-                    const lat = data.lat || citiesData[cityKey].cityCoords[0];
-                    const lng = data.lng || citiesData[cityKey].cityCoords[1];
-                    displayCoords.innerText = `${t.coordsPrefix}: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-
-                    if (map) {
-                        map.setView([lat, lng], 14);
-                        totemMarker.setLatLng([lat, lng]);
-                    }
-
-                    if (isAlerta) {
-                        statusContainer.className = "bg-red-950/90 border-2 border-red-600 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300 animate-bounce";
-                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
-                        valStatus.className = "text-base sm:text-lg font-black text-red-500 tracking-wider uppercase block blink-alarm";
-                        valStatus.innerText = t.statusAlert;
-                        if (totemMarker) totemMarker.setIcon(createTotemIcon(true));
-                    } else {
-                        statusContainer.className = "bg-emerald-950/40 border border-emerald-600/60 rounded-xl p-3.5 flex flex-col justify-between transition-all duration-300";
-                        statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-                        valStatus.className = "text-base sm:text-lg font-black text-emerald-400 tracking-wider uppercase block";
-                        valStatus.innerText = t.statusNormal;
+                        displayCityNameOffline.innerText = apelidoAtual;
+                        telemetryCard.className = "bg-red-950/20 border border-red-900/50 rounded-2xl mb-6 transition-all duration-300 shadow-xl overflow-hidden";
+                        
                         if (totemMarker) totemMarker.setIcon(createTotemIcon(false));
                     }
                 }
